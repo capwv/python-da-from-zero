@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python لتحليل البيانات | من الصفر خطوة بخطوة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f1420;
+  --panel: #171e2e;
+  --panel2: #1e2740;
+  --border: #2a3552;
+  --text: #e8ecf5;
+  --muted: #9aa7c2;
+  --accent: #4da3ff;
+  --accent2: #7c5cff;
+  --green: #2ecc71;
+  --red: #ff6b6b;
+  --amber: #ffc048;
+  --code-bg: #0a0e18;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.9;
+}
+
+code, pre, .mono {
+  font-family: 'JetBrains Mono', monospace;
+  direction: ltr;
+  text-align: left;
+}
+
+/* ===== Topbar ===== */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(15,20,32,.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-inner {
+  max-width: 1200px; margin: 0 auto; padding: 12px 20px;
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.logo { font-size: 1.3rem; font-weight: 900; }
+.logo span { color: var(--accent); }
+.progress-wrap { flex: 1; min-width: 180px; max-width: 420px; margin-inline-start: auto; }
+.progress-label { font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+.progress-label span { color: var(--accent); font-weight: 700; }
+.progress-bar { height: 8px; background: var(--panel2); border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width .5s ease; }
+
+/* ===== Layout ===== */
+.layout { max-width: 1200px; margin: 0 auto; display: flex; gap: 24px; padding: 24px 20px 80px; align-items: flex-start; }
+
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  position: sticky; top: 76px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px; max-height: calc(100vh - 100px); overflow-y: auto;
+}
+#nav { display: flex; flex-direction: column; gap: 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  color: var(--muted); font-weight: 600; font-size: .92rem;
+  border: 1px solid transparent; transition: .15s;
+}
+.nav-item:hover { background: var(--panel2); color: var(--text); }
+.nav-item.active { background: var(--panel2); color: var(--text); border-color: var(--accent); }
+.nav-item .check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); display: inline-flex; align-items: center; justify-content: center; font-size: .7rem; flex-shrink: 0; }
+.nav-item.done .check { background: var(--green); border-color: var(--green); color: #06270f; }
+.nav-item .num { color: var(--accent); font-size: .78rem; min-width: 20px; }
+
+.reset-btn {
+  margin-top: 14px; width: 100%; padding: 9px;
+  background: transparent; border: 1px solid var(--border); border-radius: 10px;
+  color: var(--muted); font-family: inherit; font-size: .85rem; cursor: pointer;
+}
+.reset-btn:hover { color: var(--red); border-color: var(--red); }
+
+.content { flex: 1; min-width: 0; }
+
+/* ===== Hero ===== */
+.hero { background: linear-gradient(135deg, var(--panel), var(--panel2)); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+.hero h2 { margin-bottom: 10px; font-size: 1.6rem; }
+.hero p { color: var(--muted); margin-bottom: 10px; }
+.hero-hint { color: var(--accent) !important; font-weight: 700; }
+
+/* ===== Lesson ===== */
+.lesson { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+.lesson h2.lesson-title { font-size: 1.5rem; margin-bottom: 6px; }
+.lesson .lesson-sub { color: var(--muted); margin-bottom: 22px; font-size: .95rem; }
+.lesson h3 { margin: 26px 0 10px; color: var(--accent); font-size: 1.15rem; }
+.lesson p { margin-bottom: 12px; color: #d4dbea; }
+.lesson ul, .lesson ol { margin: 0 22px 14px; color: #d4dbea; }
+.lesson li { margin-bottom: 6px; }
+
+.kw { color: var(--amber); font-weight: 600; font-family: 'JetBrains Mono', monospace; direction: ltr; unicode-bidi: embed; background: var(--code-bg); padding: 1px 7px; border-radius: 6px; font-size: .85em; }
+
+pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px; margin: 12px 0 18px;
+  overflow-x: auto; font-size: .9rem; line-height: 1.7;
+}
+pre .c { color: #5b6b8c; }          /* comment */
+pre .k { color: var(--accent); }    /* keyword */
+pre .s { color: var(--green); }     /* string */
+pre .n { color: var(--amber); }     /* number */
+
+.note {
+  background: rgba(77,163,255,.08); border: 1px solid rgba(77,163,255,.35);
+  border-radius: 12px; padding: 14px 16px; margin: 14px 0; font-size: .93rem;
+}
+.note.warn { background: rgba(255,192,72,.07); border-color: rgba(255,192,72,.4); }
+.note b { color: var(--accent); }
+.note.warn b { color: var(--amber); }
+
+table.demo { border-collapse: collapse; margin: 12px 0 18px; font-size: .88rem; direction: ltr; }
+table.demo th, table.demo td { border: 1px solid var(--border); padding: 6px 14px; }
+table.demo th { background: var(--panel2); color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+table.demo td { font-family: 'JetBrains Mono', monospace; color: #c7d1e6; }
+
+/* ===== Quiz ===== */
+.quiz-box, .exercise-box {
+  margin-top: 30px; border: 1px solid var(--border); border-radius: 14px;
+  padding: 20px; background: var(--panel2);
+}
+.quiz-box > h3, .exercise-box > h3 { margin-top: 0 !important; }
+.quiz-q { margin: 18px 0; padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+.quiz-q .q-text { font-weight: 700; margin-bottom: 12px; }
+.quiz-q pre { margin: 10px 0; }
+.opt {
+  display: block; width: 100%; text-align: right; margin-bottom: 8px;
+  padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--panel2); color: var(--text); font-family: inherit; font-size: .92rem;
+  cursor: pointer; transition: .15s;
+}
+.opt .mono { font-size: .88rem; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt:disabled { cursor: default; opacity: .85; }
+.opt.correct { border-color: var(--green); background: rgba(46,204,113,.12); }
+.opt.wrong { border-color: var(--red); background: rgba(255,107,107,.12); }
+.feedback { margin-top: 8px; font-size: .88rem; border-radius: 8px; padding: 8px 12px; display: none; }
+.feedback.ok { display: block; background: rgba(46,204,113,.1); color: #8deab5; }
+.feedback.no { display: block; background: rgba(255,107,107,.1); color: #ffabab; }
+
+.quiz-result {
+  margin-top: 18px; padding: 14px; border-radius: 12px; text-align: center;
+  font-weight: 700; display: none;
+}
+.quiz-result.show { display: block; background: rgba(46,204,113,.1); border: 1px solid var(--green); color: #8deab5; }
+
+/* ===== Exercises ===== */
+.exercise { margin: 16px 0; padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+.exercise .task { font-weight: 700; margin-bottom: 10px; }
+.solution-toggle {
+  padding: 8px 16px; border-radius: 8px; border: 1px solid var(--accent);
+  background: transparent; color: var(--accent); font-family: inherit;
+  font-size: .85rem; font-weight: 700; cursor: pointer;
+}
+.solution-toggle:hover { background: rgba(77,163,255,.1); }
+.solution { display: none; margin-top: 12px; }
+.solution.open { display: block; }
+.solution pre { margin-bottom: 6px; }
+.solution .why { color: var(--muted); font-size: .88rem; }
+
+/* ===== Lesson nav buttons ===== */
+.lesson-nav { display: flex; justify-content: space-between; margin-top: 34px; gap: 12px; }
+.lesson-nav button {
+  padding: 11px 22px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--panel2); color: var(--text); font-family: inherit;
+  font-weight: 700; cursor: pointer; font-size: .92rem;
+}
+.lesson-nav button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.lesson-nav button:disabled { opacity: .4; cursor: default; }
+.lesson-nav .next-btn { background: linear-gradient(90deg, var(--accent), var(--accent2)); border: none; color: #fff; }
+.lesson-nav .next-btn:hover:not(:disabled) { color: #fff; filter: brightness(1.1); }
+
+.complete-badge {
+  display: none; margin-top: 24px; text-align: center; padding: 16px;
+  background: rgba(46,204,113,.1); border: 1px solid var(--green); border-radius: 12px;
+  font-weight: 700; color: #8deab5; font-size: 1.05rem;
+}
+.complete-badge.show { display: block; }
+
+/* ===== Mobile ===== */
+.menu-toggle {
+  display: none; position: fixed; bottom: 18px; inset-inline-start: 18px; z-index: 60;
+  padding: 12px 20px; border-radius: 99px; border: none;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #fff; font-family: inherit; font-weight: 700; cursor: pointer;
+  box-shadow: 0 6px 24px rgba(77,163,255,.4);
+}
+@media (max-width: 900px) {
+  .layout { flex-direction: column; }
+  .sidebar {
+    position: fixed; inset-inline-start: 0; top: 0; bottom: 0; z-index: 55;
+    width: 290px; border-radius: 0; transform: translateX(100%);
+    transition: transform .25s ease; max-height: none;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .menu-toggle { display: block; }
+}
+:root{--bg:#04060d;--panel:#0a1120;--panel2:#0e1730;--border:#203454;--accent:#60a5fa;--accent2:#38bdf8}
+body{background-image:radial-gradient(ellipse at 50% 0,rgba(59,130,246,.15),transparent 65%)}
+.bg-shapes{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:-1}.bg-shapes i{position:absolute;width:280px;height:280px;border:1px solid #3b82f62b;transform:rotate(30deg);top:20%;left:-100px}.bg-shapes i:nth-child(2){left:auto;right:-120px;top:55%;border-radius:50%;width:400px;height:400px}.bg-shapes i:nth-child(3){top:65%;left:40%;width:120px;height:120px;border-color:#38bdf82b}
+.brand-mark{width:65px;height:auto}.hero{text-align:center;padding:40px 28px}.hero-logo{width:150px;filter:drop-shadow(0 0 20px #3b82f64d)}.hero-pill{font-size:11px;letter-spacing:1px;color:var(--accent);margin:15px 0}.hero h2{font-size:2rem}.stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin:30px 0}.stats span{font-size:12px;color:var(--muted)}.stats b{display:block;font-size:24px;color:white;direction:ltr}.cta{border:0;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:white;padding:13px 30px;border-radius:12px;font:700 16px Cairo,sans-serif;cursor:pointer;margin:10px 0 20px;box-shadow:0 8px 30px #3b82f62b}.links-bar{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid #20345466}.links-bar a,.links-bar button{color:var(--muted);font:600 12px Cairo,sans-serif;text-decoration:none;background:none;border:0;cursor:pointer}.links-bar a:hover,.links-bar button:hover{color:var(--accent)}.small{font-size:12px!important;color:var(--muted)!important}.nav-item{font-family:inherit;background:none;text-align:right;line-height:1.7}.sidebar{top:120px;max-height:calc(100vh - 145px)}
+textarea{width:100%;background:#040913;color:#d6e6ff;border:1px solid var(--border);border-radius:10px;padding:14px;font:14px/1.7 'JetBrains Mono',monospace;margin:10px 0;resize:vertical;text-align:left}.table-scroll{overflow-x:auto;max-width:100%}table.demo{display:block;overflow-x:auto;max-width:100%}pre .c{color:#91a6c8}.opt .mono{display:inline-block;direction:ltr;unicode-bidi:isolate}button:focus-visible,a:focus-visible,textarea:focus-visible{outline:2px solid #38bdf8;outline-offset:3px}.solution-toggle{margin:8px}.complete-badge{font-size:.95rem}
+@media(max-width:900px){.sidebar{top:0;max-height:none}.hero{padding:30px 18px}.lesson{padding:22px 16px}.layout{padding:18px 12px 85px}.hero h2{font-size:1.5rem}.topbar-inner{gap:10px}.progress-wrap{min-width:120px}.links-bar{gap:14px}.logo{font-size:1rem}.brand-mark{width:48px}.lesson-nav button{font-size:12px;padding:10px}.quiz-box,.exercise-box{padding:12px}}
+@media(prefers-reduced-motion:no-preference){.bg-shapes i{animation:float 12s ease-in-out infinite alternate}@keyframes float{to{transform:translateY(-25px) rotate(45deg)}}}
+
+footer a{color:var(--accent)}
+.content,.lesson{max-width:100%}.content{width:100%}pre{max-width:100%}.lesson p,.lesson li,.opt{overflow-wrap:anywhere}.lesson table{max-width:100%}
+
+/* SAMS-MIS visual language: ink-black surfaces, blue glass and quiet geometry. */
+:root{--bg:#06070a;--panel:#0a0c12;--panel2:#101522;--border:rgba(255,255,255,.10);--text:#f5f7fa;--muted:#98a1b3;--accent:#3b82f6;--accent2:#7aa7ff;--code-bg:#070a11}
+body{position:relative;isolation:isolate;background-image:radial-gradient(820px 420px at 50% -12%,rgba(59,130,246,.20),transparent 68%),radial-gradient(560px 340px at 88% 8%,rgba(139,92,246,.10),transparent 70%),radial-gradient(560px 340px at 8% 22%,rgba(56,189,248,.08),transparent 70%);background-attachment:fixed}
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(760px 360px at 50% -10%,rgba(59,130,246,.11),transparent 70%)}
+.bg-shapes{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.topbar,.layout,.menu-toggle{position:relative;z-index:1}
+.bg-shapes i{position:absolute;top:18%;left:-100px;width:280px;height:280px;border:1px solid rgba(59,130,246,.17);transform:rotate(30deg);animation:shapeFloat 14s ease-in-out infinite alternate}
+.bg-shapes i:nth-child(2){top:55%;left:auto;right:-130px;width:390px;height:390px;border-radius:50%;border-color:rgba(122,167,255,.15);animation-delay:-5s}
+.bg-shapes i:nth-child(3){top:72%;left:42%;width:110px;height:110px;border-color:rgba(56,189,248,.18);animation-delay:-9s}
+@keyframes shapeFloat{to{transform:translateY(-22px) rotate(44deg)}}
+.topbar{background:rgba(6,7,10,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
+.topbar-inner{max-width:1152px;padding:10px 16px;gap:16px}
+.logo{font-size:1.08rem;letter-spacing:.02em}.brand-mark{width:48px;filter:drop-shadow(0 8px 24px rgba(59,130,246,.2))}
+.progress-wrap{max-width:360px}.progress-bar{background:rgba(255,255,255,.08)}.progress-fill{background:linear-gradient(90deg,#3b82f6,#38bdf8);box-shadow:0 0 16px rgba(59,130,246,.35)}
+.links-bar{gap:10px;padding:8px 12px;border-top:1px solid rgba(255,255,255,.06);background:rgba(6,7,10,.28)}
+.links-bar a,.links-bar button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:0 12px;border:1px solid transparent;border-radius:11px;color:#98a1b3;font:700 12px Cairo,sans-serif;text-decoration:none;background:transparent;transition:background .2s,color .2s,border-color .2s}
+.links-bar a:hover,.links-bar button:hover{color:#fff;background:rgba(59,130,246,.12);border-color:rgba(122,167,255,.24)}
+.links-bar .community-link{color:#e9f1ff;background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.14);white-space:nowrap}
+.links-bar .community-link:hover{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.hero{position:relative;overflow:hidden;text-align:center;background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.10);border-radius:20px;box-shadow:0 22px 60px -38px rgba(59,130,246,.4)}
+.hero:before{content:"";position:absolute;top:0;right:10%;left:10%;height:2px;background:linear-gradient(to left,transparent,#7aa7ff,transparent);opacity:.75}
+.hero-logo{filter:drop-shadow(0 18px 44px rgba(59,130,246,.28))}
+.hero-pill{display:inline-block;padding:5px 13px;border-radius:999px;background:rgba(59,130,246,.10);border:1px solid rgba(122,167,255,.32);color:#9dc0ff;font-weight:800}
+.hero h2{color:#f5f7fa;font-weight:900}.hero p{color:#b8c0cf}.hero-hint{color:#9dc0ff!important}
+.lesson,.sidebar,.quiz-box,.exercise-box,.quiz-q,.exercise{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border-color:rgba(255,255,255,.10);border-radius:18px;box-shadow:0 18px 45px -38px rgba(59,130,246,.32)}
+.lesson h3{color:#9dc0ff}.nav-item.active{background:rgba(59,130,246,.12);border-color:rgba(122,167,255,.45);color:#f5f7fa}
+.nav-item:hover{background:rgba(255,255,255,.06)}.nav-item.done .check{background:#3ddc84;border-color:#3ddc84}
+pre,textarea{border-color:rgba(255,255,255,.12);background:#070a11}pre .k{color:#7aa7ff}
+.note{background:rgba(59,130,246,.08);border-color:rgba(122,167,255,.25)}.note b{color:#9dc0ff}
+.cta{background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:12px;box-shadow:0 8px 30px rgba(59,130,246,.2)}
+footer{position:relative;border-top:1px solid rgba(255,255,255,.08);padding-top:24px!important}
+
+/* Ahmed's contact footer */
+.contact-footer{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:28px;padding:24px 16px 8px;border-top:1px solid rgba(255,255,255,.10);text-align:center;color:var(--muted)}
+.contact-footer .contact-name{color:var(--text);font-size:1.1rem;font-weight:800;letter-spacing:.01em}
+.contact-footer .contact-links{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px}
+.contact-footer .contact-links a{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid rgba(122,167,255,.18);border-radius:999px;background:rgba(59,130,246,.07);color:#a8c4ff;text-decoration:none;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+.contact-footer .contact-links a:hover{background:rgba(59,130,246,.16);border-color:rgba(122,167,255,.45);transform:translateY(-1px)}
+.contact-footer .contact-note{font-size:.78rem;color:var(--muted)}
+@media(max-width:480px){.contact-footer{padding-inline:10px}.contact-footer .contact-links{gap:7px}.contact-footer .contact-links a{padding:7px 10px;font-size:.88rem}}
+
+@media(max-width:430px){.links-bar{gap:4px;padding-inline:6px}.links-bar a,.links-bar button{padding:0 8px;font-size:11px}.links-bar .community-link span{display:none}.topbar-inner{padding-inline:12px}.brand-mark{width:40px}}
+@media(prefers-reduced-motion:reduce){.bg-shapes i{animation:none}}
+
+#py-output pre{white-space:pre-wrap;background:#070a11;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px;margin:12px 0;direction:ltr;text-align:left;font-family:'JetBrains Mono',monospace;font-size:.88rem;line-height:1.7;color:#d6e6ff;max-height:420px;overflow:auto}#py-output img{max-width:100%;border-radius:12px;margin:10px 0;background:#fff;display:block}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<div class="bg-shapes" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <img class="brand-mark" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAABlCAMAAADTcTmKAAADAFBMVEVHcEz///////////////////7////////7/f///v8NAKH///////////8eU5n+/v9EZ8v7/Pv////+//8xrP+AtNp7nZ9Y/2D////9/P3////////8/f7//////////////////////v////////////////////////////////8TbP8hT3MTcv7///////////////////////9ctYuh8U3///////////////////8TX/L///8Ta/7///////////////8TV+UbW7UVQKP///////////////8UeP8TXen///8sW57///////////////////////8TQ62Lv9L///8nYaH///////////8SWO7////////29vseZ7v///////8TZ/4TbP0TZfwTXrb///8UZusTUL4TY+L///8TYPX///8TUNESZP4TVMr///////////9dyVb4+voTYO3///8TUdcWYb////8TQKUTWfwSYv4STKkTV9gTVdsUR6ETUrMSVtb///8UUK4TU8wScv/IiboTX98UbPkTTbMSXvkSV/oTVvIUfMUTUOwtpdMSW8kTZfizwFIVVq0UTcUVZNcTRrESRLYWVbITV9MTW90TaPUSXMQSn8kTVsTb0jkSW/YTTL4aWL0UULMTRqwRV8ITS8ETS7gSRb4TYdkTUscTT+ISTN8SQqoSTbEUV6YTUM8TUrsQQswUX/oTVcETUdMTUtQTUMoTWtYUaLIYYbkSQccRSL8Sa9USVckSWd4QWO0TStkTUMkUVK8TVdgTWbwTRb8SZPMbZbUgRZ4TTMsTYugVx+EUZuYTU8M3jNMVUqgRR7UTQK8TT78TUeEUgLoSWdESUr8SZ9oSVLcUduAjT6gTWa93xFoSYMwYXsUSXcISa88TWs0TPbITVtdDabg0a78SRc4sYswTX+AUYegTZN4TZcoTbuFhgb41YbETQ6kSgumIoMZTe8KJqt4TTLMaW7CIqMeCms3U2OP///8TVuEUWtYSUdkVXMoUZ9iJaHwdAAAA+nRSTlMA/Pn6/gT9AQMCAfv39QIFBAfyBgIFBgHbDTOJHOwV4BhbCMlgZ3sj1/Ov+QT776ZOgOXiBAKru6BWt/1j8RI7HxH5Fx6FR6Oy/f5KCULB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" alt="Infinity University Activity"><h1 class="logo">Python <span>لتحليل البيانات</span></h1>
+    <div class="progress-wrap">
+      <div class="progress-label"><span id="progress-text">0%</span> من الرحلة</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+  </div>
+<nav class="links-bar" aria-label="روابط الموقع"><button id="home-link">الرئيسية</button><button id="lab-link">معمل Python</button><a class="community-link" href="https://infinity-team-1-iua.github.io/IUA-SAMS/" target="_blank" rel="noopener" aria-label="Our Community">👥 <span>Our Community</span> ↗</a></nav></header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <nav id="nav"></nav>
+    <button class="reset-btn" id="reset-btn" title="مسح كل التقدم المحفوظ">🗑️ ابدأ من الأول</button>
+  </aside>
+
+  <main class="content" id="content">
+    <div class="hero" id="hero">
+      <img class="hero-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAABlCAMAAADTcTmKAAADAFBMVEVHcEz///////////////////7////////7/f///v8NAKH///////////8eU5n+/v9EZ8v7/Pv////+//8xrP+AtNp7nZ9Y/2D////9/P3////////8/f7//////////////////////v////////////////////////////////8TbP8hT3MTcv7///////////////////////9ctYuh8U3///////////////////8TX/L///8Ta/7///////////////8TV+UbW7UVQKP///////////////8UeP8TXen///8sW57///////////////////////8TQ62Lv9L///8nYaH///////////8SWO7////////29vseZ7v///////8TZ/4TbP0TZfwTXrb///8UZusTUL4TY+L///8TYPX///8TUNESZP4TVMr///////////9dyVb4+voTYO3///8TUdcWYb////8TQKUTWfwSYv4STKkTV9gTVdsUR6ETUrMSVtb///8UUK4TU8wScv/IiboTX98UbPkTTbMSXvkSV/oTVvIUfMUTUOwtpdMSW8kTZfizwFIVVq0UTcUVZNcTRrESRLYWVbITV9MTW90TaPUSXMQSn8kTVsTb0jkSW/YTTL4aWL0UULMTRqwRV8ITS8ETS7gSRb4TYdkTUscTT+ISTN8SQqoSTbEUV6YTUM8TUrsQQswUX/oTVcETUdMTUtQTUMoTWtYUaLIYYbkSQccRSL8Sa9USVckSWd4QWO0TStkTUMkUVK8TVdgTWbwTRb8SZPMbZbUgRZ4TTMsTYugVx+EUZuYTU8M3jNMVUqgRR7UTQK8TT78TUeEUgLoSWdESUr8SZ9oSVLcUduAjT6gTWa93xFoSYMwYXsUSXcISa88TWs0TPbITVtdDabg0a78SRc4sYswTX+AUYegTZN4TZcoTbuFhgb41YbETQ6kSgumIoMZTe8KJqt4TTLMaW7CIqMeCms3U2OP///8TVuEUWtYSUdkVXMoUZ9iJaHwdAAAA+nRSTlMA/Pn6/gT9AQMCAfv39QIFBAfyBgIFBgHbDTOJHOwV4BhbCMlgZ3sj1/Ov+QT776ZOgOXiBAKru6BWt/1j8RI7HxH5Fx6FR6Oy/f5KCULB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" alt="Infinity University Activity"><div class="hero-pill">INFINITY UNIVERSITY ACTIVITY • PYTHON ACADEMY</div><h2>أهلاً بيك في رحلة Python لتحليل البيانات</h2>
+      <p>الموقع ده هيمشي معاك من الصفر خالص لحد ما تعمل مشروع تحليل بيانات كامل ترفعه على GitHub. كل درس فيه شرح بالعامية المصرية، أمثلة كود، كويز بإجابة فورية، وتمارين بالحل. وفي معمل Python حقيقي جوه المتصفح تجرب فيه بنفسك. تقدمك بيتحفظ لوحده في المتصفح، فممكن تقفل وترجع تكمل من مكانك.</p>
+      <div class="stats"><span><b>14</b> درس متدرج</span><span><b>42</b> سؤال تفاعلي</span><span><b>Python</b> معمل حقيقي</span></div><button id="start-btn" class="cta">ابدأ رحلتك ←</button><p class="hero-hint">من أول print لحد مشروع تحليل مبيعات كامل</p><p class="small">التقدم محفوظ على نفس المتصفح والجهاز فقط. مسح بيانات المتصفح بيمسحه.</p>
+    </div>
+    <div id="lesson"></div><section class="lesson" id="lab" hidden><h2>معمل Python العملي</h2><p>Python 3 حقيقي شغال داخل متصفحك (Pyodide / WebAssembly). أول تشغيل بياخد ثواني لتحميل البيئة، وبعدها سريع. البيئة بتحتفظ بالمتغيرات بين التشغيلات، وزرار "صفّر المعمل" بيرجعك للبداية.</p><p>جدول المبيعات التدريبي متعرف جاهز باسم <code>sales</code> (قايمة قواميس، 12 طلب). مكتبات pandas وNumPy وmatplotlib بتتحمل لوحدها أول ما تعمل import، والرسم البياني بيظهر تحت المخرجات.</p><label for="py-input">الكود بتاعك</label><textarea id="py-input" spellcheck="false" rows="10" dir="ltr">for order in sales[:3]:
+    print(order["product_name"], order["revenue"])</textarea><button class="cta" id="run-py">شغّل الكود ▶</button><button class="solution-toggle" id="reset-py">🔄 صفّر المعمل</button><div id="py-output" aria-live="polite"></div><p class="small">المعمل بيشتغل على جهازك مباشرة، فمكتوبش حاجة بتتبعت لأي سيرفر. اكتب plt.show() في آخر كود الرسم عشان تطلع الرسمة.</p></section>
+  <footer class="small" style="text-align:center;margin:30px 0">من أسرة Infinity University Activity<br><a href="https://docs.python.org/3/tutorial/">Python Tutorial</a> · <a href="https://pandas.pydata.org/docs/user_guide/10min.html">pandas في 10 دقائق</a> · <a href="https://numpy.org/doc/stable/user/absolute_beginners.html">NumPy للمبتدئين</a><p>المعمل يستخدم Pyodide (Python عبر WebAssembly). مكتبات pandas وNumPy وmatplotlib مفتوحة المصدر.</p>
+    <div class="contact-footer" aria-label="بيانات التواصل">
+      <div class="contact-name">Ahmed Wael Othman</div>
+      <nav class="contact-links" aria-label="روابط التواصل">
+        <a href="https://www.linkedin.com/in/ahmed-wael-othman/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">in <span>LinkedIn</span></a>
+        <a href="mailto:ahmedwaelothman612@gmail.com" aria-label="Email Ahmed Wael Othman">✉ <span>Gmail</span></a>
+        <a href="https://github.com/capwv" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">⌘ <span>GitHub</span></a>
+      </nav>
+    </div>
+  </footer></main>
+</div>
+
+<button class="menu-toggle" id="menu-toggle">☰ الدروس</button>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script>
+/* Curriculum part 1: intro, variables, text & numbers, lists */
+var CURRICULUM = window.CURRICULUM || [];
+
+CURRICULUM.push(
+{
+  id: 'intro',
+  nav: 'مقدمة: ليه Python لتحليل البيانات؟',
+  title: 'الدرس 1: إيه هي Python وليه هي لغة تحليل البيانات الأولى؟',
+  subtitle: 'قبل ما نكتب أي كود، لازم تفهم إنت هتعمل إيه وبأي أدوات',
+  blocks: [
+    { type: 'p', text: 'تخيل إن معاك ملف مبيعات فيه 50 ألف صف، ومطلوب منك تعرف: إجمالي الإيراد، أعلى منتج، والمبيعات شهر بشهر. في Excel ممكن تعملها، بس Python بتديك طريقة مكتوبة قابلة للتكرار والمراجعة: الكود بيوثق كل خطوة، وتقدر تشغله تاني على داتا جديدة بضغطة واحدة.' },
+    { type: 'p', text: 'Python لغة برمجة سهلة القراءة ومشهورة جداً في تحليل البيانات (Data Analysis). أغلب إعلانات وظايف Data Analyst بتطلبها، ومعاها مكتبات جاهزة زي `pandas` للجداول و `matplotlib` للرسم، فبتكتب أقل وتوصل لنتيجة أسرع.' },
+    { type: 'h', text: 'هتكتب وتشغل Python فين؟' },
+    { type: 'p', text: 'عندك 3 طرق، وكلهم مجاناً:' },
+    { type: 'list', items: [
+      'المعمل الموجود هنا في الموقع: Python حقيقي شغال جوه المتصفح بتاعك (تقنية اسمها Pyodide / WebAssembly). مفيش أي تنصيب ولا حسابات. ده اللي هنتمرن عليه طول الكورس.',
+      'Google Colab: صفحات كود أونلاين من جوجل، مناسبة لمشاريع أكبر وبتشغل على سيرفرات جوجل.',
+      'تنصيب Python على جهازك: الأنسب لما تشتغل بشكل يومي، مع برنامج زي VS Code.'
+    ]},
+    { type: 'h', text: 'أول سطر كود في حياتك' },
+    { type: 'p', text: 'الدالة `print` بتطبع أي حاجة على الشاشة. جرب الكود ده في المعمل (من زرار "معمل Python" فوق):' },
+    { type: 'code', code: `print("أهلاً! دي أول خطوة في تحليل البيانات")
+print(12000 + 5000)` },
+    { type: 'p', text: 'السطر الأول بيطبع نص (بين علامتي تنصيص)، والتاني بيحسب ويطبع الناتج `17000`. بايثون بتفرق بين النص والرقم من غير ما تقولها: علامات التنصيص معناها نص.' },
+    { type: 'h', text: 'الداتا اللي هنشتغل عليها طول الرحلة' },
+    { type: 'p', text: 'هنستخدم جدول مبيعات متجر تجريبي: 12 طلب في 4 شهور، فيه المنتج والفئة والمدينة والإيراد. الداتا مصنوعة للتعلم، مش معاملات شركة حقيقية. ده شكل أول 3 صفوف منها:' },
+    { type: 'table', head: ['order_id', 'order_date', 'product_name', 'category', 'city', 'customer', 'revenue'], rows: [
+      ['1', '2025-01-03', 'Laptop', 'Tech', 'Cairo', 'Aya', '12000'],
+      ['2', '2025-01-15', 'Chair', 'Furniture', 'Giza', 'Ali', '2000'],
+      ['3', '2025-01-21', 'Mouse', 'Tech', 'Cairo', 'Omar', '500']
+    ]},
+    { type: 'p', text: 'الداتا دي متعرفة جاهزة في المعمل باسم `sales`، وهنعمل بيها كل حاجة من أول جمع الأرقام لحد الرسم البياني والمشروع النهائي. إجمالي الإيراد فيها 59000، وهنتأكد من الرقم ده بإيدنا بعدين.' },
+    { type: 'note', text: 'الكود في الموقع كله بالإنجليزي (لغة البرمجة نفسها إنجليزية)، والشرح بالعامية. أي كلمة كود هتلاقيها في صندوق غامق زي `print` عشان تتعود على شكلها الحقيقي.' }
+  ],
+  quiz: [
+    { q: 'إيه أشهر استخدام لـ Python في شغل الـ Data Analyst؟', options: [
+      { text: 'تصميم الصور واللوجوهات' },
+      { text: 'قراءة البيانات وتنضيفها وتحليلها واستخراج نتايج', mono: false },
+      { text: 'تشغيل قواعد بيانات على السيرفر' }
+    ], answer: 1, explain: 'دي نقطة قوة Python: مكتبات زي pandas وNumPy معمولة مخصوص لقراءة الجداول وتنضيفها وحساب المؤشرات منها.' },
+    { q: 'إيه ناتج الكود ده؟', code: `print(2000 + 500)`, options: [
+      { text: '2000 + 500', mono: true },
+      { text: '2500', mono: true },
+      { text: '"2500"', mono: true }
+    ], answer: 1, explain: 'الأرقام من غير علامات تنصيص بتتحسب، فـ print بتطبع ناتج الجمع: 2500.' },
+    { q: 'معمل الموقع بيشغل Python إزاي؟', options: [
+      { text: 'بيبعت الكود لسيرفر بعيد يشغله' },
+      { text: 'بيشغل Python حقيقي جوه المتصفح نفسه بتقنية WebAssembly (Pyodide)' },
+      { text: 'بيكتب نتايج متسجلة مسبقاً' }
+    ], answer: 1, explain: 'Pyodide هي Python مترجمة لـ WebAssembly، فالكود بيتنفذ على جهازك مباشرة. أول تحميل بياخد ثواني وبعدها سريع.' }
+  ],
+  exercises: [
+    { task: 'اطبع اسمك الأول باستخدام print', code: `print("Ahmed")`, why: 'أي نص لازم يتحط بين علامتي تنصيص، مزدوجة أو مفردة.' },
+    { task: 'اطبع ناتج جمع إيراد أول طلبين (12000 و 2000)', code: `print(12000 + 2000)`, why: 'المعادلة بتتحسب الأول وبعدين الناتج بيتطبع: 14000.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'vars',
+  nav: 'المتغيرات وأنواع البيانات',
+  title: 'الدرس 2: المتغيرات وأنواع البيانات',
+  subtitle: 'المتغير هو الصندوق اللي بتحط فيه أي قيمة وتسميه',
+  blocks: [
+    { type: 'p', text: 'المتغير (Variable) هو اسم بيشاور على قيمة. بدل ما تكتب الرقم كل مرة، تحطه في متغير وتستخدم الاسم:' },
+    { type: 'code', code: `revenue = 12000
+product = "Laptop"
+print(revenue)
+print(product)` },
+    { type: 'p', text: 'علامة `=` هنا معناها "خزن القيمة اللي على اليمين في الاسم اللي على الشمال"، مش معادلة رياضية. ولما تكتب `revenue = 12000` وبعدين `revenue = 15000`، القيمة القديمة بتتبدل بالجديدة.' },
+    { type: 'h', text: 'أنواع البيانات الأساسية' },
+    { type: 'table', head: ['النوع', 'الاسم في Python', 'مثال'], rows: [
+      ['رقم صحيح', 'int', '12000'],
+      ['رقم عشري', 'float', '19.99'],
+      ['نص', 'str', '"Cairo"'],
+      ['منطقي (صح/غلط)', 'bool', 'True أو False']
+    ]},
+    { type: 'p', text: 'عشان تعرف نوع أي قيمة استخدم `type`:' },
+    { type: 'code', code: `print(type(12000))      # <class 'int'>
+print(type(19.99))      # <class 'float'>
+print(type("Laptop"))   # <class 'str'>
+print(type(True))       # <class 'bool'>` },
+    { type: 'p', text: 'الرمز `#` معناه تعليق (Comment): أي حاجة بعده في نفس السطر Python بتتجاهلها. استخدمه تشرح الكود لنفسك ولزمايلك.' },
+    { type: 'h', text: 'التحويل بين الأنواع' },
+    { type: 'code', code: `x = "12000"
+print(int(x) + 500)     # 12500 : حولنا النص لرقم
+print(str(12500) + " جنيه")  # 12500 جنيه : حولنا الرقم لنص
+print(float("19.99"))   # 19.99` },
+    { type: 'note', warn: true, text: 'جمع نص على رقم بيعمل خطأ: `"12000" + 500` هترمي TypeError. حول الأول بـ `int` أو `float` وبعدين اجمع. دي من أكتر الأخطاء اللي هتقابلها وأنت بتقرأ داتا من ملفات.' },
+    { type: 'h', text: 'طباعة شيك بـ f-string' },
+    { type: 'code', code: `name = "Ahmed"
+revenue = 12000
+print(f"الطلب بتاع {name} إيراده {revenue} جنيه")` },
+    { type: 'p', text: 'حرف `f` قبل علامة التنصيص بيخلي أي حاجة بين `{}` تتحسب وتتحط مكانها. دي الطريقة الأشيك والأشهر لطباعة نتايج التحليل.' },
+    { type: 'h', text: 'قواعد تسمية المتغيرات' },
+    { type: 'list', items: [
+      'حروف إنجليزية وأرقام وشرطة سفلية `_` بس، ومينفعش يبدأ برقم.',
+      'حالة الحروف بتفرق: `Revenue` و `revenue` متغيرين مختلفين.',
+      'المتفق عليه: أسماء صغيرة بشرطة سفلية زي `total_revenue` (اسمها snake_case).',
+      'اختار اسم يوصف المحتوى: `revenue` أحسن من `x`.'
+    ]}
+  ],
+  quiz: [
+    { q: 'إيه نوع القيمة `19.99` في Python؟', options: [
+      { text: 'int', mono: true },
+      { text: 'str', mono: true },
+      { text: 'float', mono: true }
+    ], answer: 2, explain: 'أي رقم فيه علامة عشرية هو float. الرقم الصحيح int.' },
+    { q: 'إيه ناتج الكود ده؟', code: `x = "100"
+y = int(x) + 20
+print(y)`, options: [
+      { text: '10020', mono: true },
+      { text: '120', mono: true },
+      { text: 'خطأ TypeError', mono: true }
+    ], answer: 1, explain: 'int("100") بتحول النص للرقم 100، وبعدين نجمع 20 فيطلع 120. لو كنا جمعنا x نفسها على 20 كان هيطلع خطأ لأنها نص.' },
+    { q: 'أنهي اسم متغير صحيح في Python؟', options: [
+      { text: '2revenue', mono: true },
+      { text: 'total-revenue', mono: true },
+      { text: 'total_revenue', mono: true }
+    ], answer: 2, explain: 'الأول بيبدأ برقم (ممنوع)، والتاني فيه شرطة عادية (Python هتفهمها طرح). الشرطة السفلية _ مسموحة.' }
+  ],
+  exercises: [
+    { task: 'عرف متغير `product` فيه اسم منتج، ومتغير `revenue` فيه إيراده، واطبعهم في جملة واحدة بـ f-string', code: `product = "Laptop"
+revenue = 12000
+print(f"{product} حقق إيراد {revenue} جنيه")`, why: 'الـ f-string بتخلي القوسين {} يتحولوا لقيم المتغيرات جوه النص.' },
+    { task: 'عندك الإيراد كنص `"8500"`. حوله لرقم، زود عليه ضريبة 14% (اضرب في 1.14)، واطبع الناتج', code: `revenue_text = "8500"
+total = int(revenue_text) * 1.14
+print(total)          # 9690.0
+print(round(total))   # 9690`, why: 'الضرب في 1.14 بيرجع float. round بتقرب لأقرب رقم صحيح.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'textnum',
+  nav: 'النصوص والأرقام',
+  title: 'الدرس 3: التعامل مع النصوص والأرقام',
+  subtitle: 'تنضيف النصوص والحسابات، عيشة المحلل اليومية',
+  blocks: [
+    { type: 'p', text: 'في الداتا الحقيقية، النصوص بتيجي متبهدلة: مسافات زيادة، حروف كبيرة وصغيرة مخلوطة، أسماء مدن متكتبة بأكتر من طريقة. قبل أي تحليل لازم تنضف، وده بيتم بدوال جاهزة على النصوص اسمها Methods:' },
+    { type: 'code', code: `city = "  cairo  "
+print(city.strip())        # "cairo" : شال المسافات من الطرفين
+print(city.strip().title()) # "Cairo" : أول حرف كابيتال
+print("LAPTOP".lower())    # "laptop"
+print("laptop".upper())    # "LAPTOP"
+print(len("Laptop"))       # 6 : عدد الحروف` },
+    { type: 'p', text: 'لاحظ التركيبة `city.strip().title()`: الدوال بتتنفذ من الشمال لليمين، كل واحدة شغالة على نتيجة اللي قبلها. دي سلسلة تنضيف شائعة جداً.' },
+    { type: 'h', text: 'تقسيم واستبدال النصوص' },
+    { type: 'code', code: `date = "2025-01-03"
+parts = date.split("-")
+print(parts)        # ['2025', '01', '03']
+print(parts[0])     # 2025 : أول عنصر
+
+product = "Gaming Laptop"
+print(product.replace("Gaming", "Office"))  # Office Laptop
+print("Lap" in product)  # True : هل النص موجود؟` },
+    { type: 'h', text: 'الحسابات على الأرقام' },
+    { type: 'code', code: `print(12000 + 2000)   # 14000 جمع
+print(12000 - 2000)  # 10000 طرح
+print(500 * 3)       # 1500 ضرب
+print(10 / 3)        # 3.3333333333333335 قسمة (بتطلع float دايماً)
+print(10 // 3)       # 3 قسمة صحيحة (بتشيل الكسر)
+print(10 % 3)        # 1 باقي القسمة
+print(2 ** 10)       # 1024 أس` },
+    { type: 'p', text: 'باقي القسمة `%` مفيد جداً: `order_id % 2 == 0` معناها الرقم زوجي. وهتلاقيها في أفكار زي "كل صف تالت".' },
+    { type: 'code', code: `revenue = 12345.6789
+print(round(revenue))      # 12346
+print(round(revenue, 2))   # 12345.68 : رقمين بعد العلامة` },
+    { type: 'note', text: 'القسمة العادية `/` في Python بتطلع float حتى لو الناتج صحيح: `10 / 2` تساوي `5.0`. ده طبيعي ومش غلط، بس خد بالك لو بتقارن أنواع.' },
+    { type: 'note', warn: true, text: 'الأرقام العشرية float ممكن تطلع زوائد صغيرة زي `0.1 + 0.2 = 0.30000000000000004`. ده سلوك طبيعي في كل لغات البرمجة. الحل: قرب النتايج بـ `round` قبل العرض أو المقارنة.' }
+  ],
+  quiz: [
+    { q: 'إيه ناتج `"  GIZA ".strip().lower()`؟', options: [
+      { text: '"GIZA"', mono: true },
+      { text: '"  giza "', mono: true },
+      { text: '"giza"', mono: true }
+    ], answer: 2, explain: 'strip بتشيل المسافات الأول، وبعدين lower بتحول الحروف لصغيرة: giza من غير مسافات.' },
+    { q: 'إيه ناتج `17 % 5`؟', options: [
+      { text: '3.4', mono: true },
+      { text: '3', mono: true },
+      { text: '2', mono: true }
+    ], answer: 2, explain: '17 على 5 فيها 3 والباقي 2. علامة % بترجع الباقي.' },
+    { q: 'عايز تاخد السنة من التاريخ `"2025-03-18"`. أنهي كود صح؟', options: [
+      { text: '"2025-03-18".split("-")[0]', mono: true },
+      { text: '"2025-03-18".split("-")[1]', mono: true },
+      { text: '"2025-03-18".cut("-", 0)', mono: true }
+    ], answer: 0, explain: 'split("-") بتقسم لقايمة [2025, 03, 18]، وأول عنصر رقمه 0. مفيش دالة اسمها cut في Python.' }
+  ],
+  exercises: [
+    { task: 'عندك اسم عميل متكتب وحش: `"  mOhamed "`. نضفه (شيل المسافات وخلي أول حرف كابيتال) واطبعه', code: `name = "  mOhamed "
+print(name.strip().title())   # Mohamed`, why: 'title بتحول أول حرف من كل كلمة لكابيتال والباقي صغير، فبتصلح MOhamed لـ Mohamed.' },
+    { task: 'احسب متوسط إيراد 3 طلبات: 12000 و 4500 و 700، واطبعه مقرب لرقمين عشريين', code: `avg = (12000 + 4500 + 700) / 3
+print(round(avg, 2))   # 5733.33`, why: 'القسمة بتطلع float، وround مع رقم 2 بتقرب لرقمين بعد العلامة.' },
+    { task: 'اطبع هل رقم الطلب 13 زوجي ولا فردي باستخدام باقي القسمة', code: `order_id = 13
+print(order_id % 2 == 0)   # False يعني فردي`, why: 'لو الباقي من القسمة على 2 يساوي صفر يبقى الرقم زوجي والنتيجة True.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'lists',
+  nav: 'القوائم Lists',
+  title: 'الدرس 4: القوائم Lists',
+  subtitle: 'أول مرة تمسك عمود كامل من البيانات في متغير واحد',
+  blocks: [
+    { type: 'p', text: 'القايمة (List) هي مجموعة قيم مترتبة في متغير واحد. فكر فيها كعمود في Excel: كل خلية ليها مكان ورقم. بتتكتب بين قوسين مربعين `[]`:' },
+    { type: 'code', code: `revenues = [12000, 2000, 500, 13000, 4000]
+print(revenues)        # [12000, 2000, 500, 13000, 4000]
+print(revenues[0])     # 12000 : أول عنصر (العد من صفر!)
+print(revenues[1])     # 2000
+print(revenues[-1])    # 4000 : آخر عنصر` },
+    { type: 'note', warn: true, text: 'العد في Python بيبدأ من صفر مش واحد: أول عنصر رقمه `0`، وتاني عنصر رقمه `1`. ولو طلبت رقم أكبر من حجم القايمة هيطلع خطأ IndexError. الرقم السالب `-1` بيجيب من الآخر.' },
+    { type: 'h', text: 'التقطيع Slicing: هات جزء من القايمة' },
+    { type: 'code', code: `revenues = [12000, 2000, 500, 13000, 4000]
+print(revenues[0:3])   # [12000, 2000, 500] : من 0 لقبل 3
+print(revenues[2:])    # [500, 13000, 4000] : من 2 للآخر
+print(revenues[:2])    # [12000, 2000] : أول عنصرين` },
+    { type: 'p', text: 'القاعدة: `[البداية:النهاية]` والنهاية مش بتتاخد. لو شلت البداية يبدأ من أول القايمة، ولو شلت النهاية ياخد للآخر.' },
+    { type: 'h', text: 'تعديل القايمة' },
+    { type: 'code', code: `revenues = [12000, 2000, 500]
+revenues.append(13000)   # إضافة في الآخر
+print(revenues)          # [12000, 2000, 500, 13000]
+revenues.remove(2000)    # مسح أول قيمة تساوي 2000
+print(revenues)          # [12000, 500, 13000]
+last = revenues.pop()    # بيشيل آخر عنصر ويرجعه
+print(last, revenues)    # 13000 [12000, 500]` },
+    { type: 'h', text: 'دوال جاهزة على القوائم الرقمية' },
+    { type: 'code', code: `revenues = [12000, 2000, 500, 13000, 4000]
+print(len(revenues))     # 5 : العدد
+print(sum(revenues))     # 31500 : المجموع
+print(max(revenues))     # 13000
+print(min(revenues))     # 500
+print(sum(revenues) / len(revenues))  # 6300.0 : المتوسط` },
+    { type: 'p', text: 'لاحظ: بنفسك قدرت تحسب مجموع ومتوسط وأعلى قيمة لعمود إيرادات كامل في سطر واحد لكل عملية. دي أول خطوة تحليل حقيقي.' },
+    { type: 'h', text: 'ترتيب وبحث' },
+    { type: 'code', code: `revenues = [12000, 2000, 500, 13000, 4000]
+print(sorted(revenues))            # [500, 2000, 4000, 12000, 13000]
+print(sorted(revenues, reverse=True))  # [13000, 12000, 4000, 2000, 500]
+print(13000 in revenues)           # True : هل القيمة موجودة؟` },
+    { type: 'note', text: '`sorted` بترجع قايمة جديدة مترتبة من غير ما تغير الأصلية. لو عايز تغير القايمة نفسها استخدم `revenues.sort()`. في التحليل غالباً الأفضل تحافظ على الترتيب الأصلي.' }
+  ],
+  quiz: [
+    { q: 'إيه ناتج `print([10, 20, 30, 40][2])`؟', options: [
+      { text: '20', mono: true },
+      { text: '30', mono: true },
+      { text: '40', mono: true }
+    ], answer: 1, explain: 'العد من صفر: العنصر 0 هو 10، والعنصر 1 هو 20، والعنصر 2 هو 30.' },
+    { q: 'إيه ناتج `print([5, 10, 15, 20][1:3])`؟', options: [
+      { text: '[10, 15]', mono: true },
+      { text: '[5, 10, 15]', mono: true },
+      { text: '[10, 15, 20]', mono: true }
+    ], answer: 0, explain: 'التقطيع [1:3] بياخد من العنصر 1 لقبل العنصر 3: يعني 10 و 15 بس.' },
+    { q: 'عايز تجمع كل قيم قايمة `revenues`. أنهي صح؟', options: [
+      { text: 'revenues.sum()', mono: true },
+      { text: 'sum(revenues)', mono: true },
+      { text: 'add(revenues)', mono: true }
+    ], answer: 1, explain: 'sum دالة جاهزة بتاخد القايمة كاملة. القوائم العادية مفيهاش method اسمها sum (دي موجودة في NumPy وpandas بعدين).' }
+  ],
+  exercises: [
+    { task: 'عندك القايمة `[12000, 2000, 500, 13000, 4000]`. اطبع أول عنصر، وآخر عنصر، وعدد العناصر', code: `revenues = [12000, 2000, 500, 13000, 4000]
+print(revenues[0])    # 12000
+print(revenues[-1])   # 4000
+print(len(revenues))  # 5`, why: 'الأول رقمه 0، والآخر بـ -1، والعدد بـ len.' },
+    { task: 'احسب متوسط الإيرادات دي واطبعه', code: `revenues = [12000, 2000, 500, 13000, 4000]
+avg = sum(revenues) / len(revenues)
+print(avg)   # 6300.0`, why: 'المتوسط = المجموع على العدد. دي أبسط معادلة في التحليل كله.' },
+    { task: 'اطبع أكبر إيرادين في القايمة (تلميح: رتب تنازلي وخد أول عنصرين)', code: `revenues = [12000, 2000, 500, 13000, 4000]
+top2 = sorted(revenues, reverse=True)[:2]
+print(top2)   # [13000, 12000]`, why: 'sorted مع reverse=True بترتب من الأكبر للأصغر، والتقطيع [:2] بياخد أول عنصرين. دي نفس فكرة "أعلى 10 مبيعات" الشهيرة.' }
+  ]
+}
+);
+
+</script>
+<script>
+/* Curriculum part 2: dicts, conditions, loops, functions, files */
+CURRICULUM.push(
+{
+  id: 'dicts',
+  nav: 'القواميس Dictionaries',
+  title: 'الدرس 5: القواميس Dictionaries',
+  subtitle: 'صف واحد من جدول البيانات = قاموس واحد في Python',
+  blocks: [
+    { type: 'p', text: 'القاموس (Dictionary) بيخزن القيم بأسماء مش بأرقام: كل قيمة ليها مفتاح (Key). لو القايمة كانت عمود في Excel، فالقاموس هو الصف الواحد: كل عمود اسمه مفتاح ومحتواه قيمة. بتتكتب بين قوسين معكوفين `{}`:' },
+    { type: 'code', code: `order = {"order_id": 1, "product": "Laptop", "city": "Cairo", "revenue": 12000}
+print(order["product"])   # Laptop
+print(order["revenue"])   # 12000` },
+    { type: 'h', text: 'إضافة وتعديل' },
+    { type: 'code', code: `order = {"product": "Laptop", "revenue": 12000}
+order["city"] = "Cairo"          # مفتاح جديد
+order["revenue"] = 12500         # تعديل قيمة موجودة
+print(order)   # {'product': 'Laptop', 'revenue': 12500, 'city': 'Cairo'}` },
+    { type: 'p', text: 'لو المفتاح موجود بتتعدل قيمته، ولو مش موجود بيتخلق جديد. نفس السطر للحالتين.' },
+    { type: 'h', text: 'get الآمنة والتعامل مع المفاتيح الناقصة' },
+    { type: 'code', code: `order = {"product": "Laptop", "revenue": 12000}
+# print(order["city"])         # ده هيعمل خطأ KeyError!
+print(order.get("city"))           # None : مفيش خطأ
+print(order.get("city", "مش معروف"))  # مش معروف : قيمة افتراضية` },
+    { type: 'note', warn: true, text: 'في الداتا الحقيقية، صفوف كتير بتبقى ناقصة قيم. استخدام `get` مع قيمة افتراضية بيمنع الكود من الوقوع أول ما يقابل صف ناقص.' },
+    { type: 'h', text: 'المفاتيح والقيم واللف عليهم' },
+    { type: 'code', code: `order = {"product": "Laptop", "city": "Cairo", "revenue": 12000}
+print(order.keys())     # dict_keys(['product', 'city', 'revenue'])
+print(order.values())   # dict_values(['Laptop', 'Cairo', 12000])
+for key, value in order.items():
+    print(key, "=", value)` },
+    { type: 'h', text: 'قايمة قواميس = جدول كامل' },
+    { type: 'p', text: 'وده الشكل اللي هنشتغل بيه طول الكورس: جدول المبيعات عبارة عن قايمة، كل عنصر فيها قاموس يمثل طلب. في المعمل الداتا دي جاهزة باسم `sales`:' },
+    { type: 'code', code: `sales = [
+    {"order_id": 1, "product_name": "Laptop", "city": "Cairo", "revenue": 12000},
+    {"order_id": 2, "product_name": "Chair", "city": "Giza", "revenue": 2000},
+]
+print(sales[0]["product_name"])   # Laptop : أول صف، عمود المنتج
+print(sales[1]["revenue"])        # 2000` },
+    { type: 'p', text: 'اقرأها كده: `sales[0]` يعني أول صف، و `["product_name"]` يعني هات عمود المنتج من الصف ده. التركيبة دي أساس كل اللي جاي، حتى `pandas` نفسها شغالة بنفس الفكرة.' }
+  ],
+  quiz: [
+    { q: 'إيه ناتج `print({"a": 10, "b": 20}["b"])`؟', options: [
+      { text: '10', mono: true },
+      { text: '20', mono: true },
+      { text: 'KeyError', mono: true }
+    ], answer: 1, explain: 'الوصول بالمفتاح b بيرجع قيمته: 20. القواميس بتتقارأ بالمفتاح مش بالترتيب.' },
+    { q: 'عندك قاموس مفيهوش مفتاح اسمه `city`. إيه الفرق بين `d["city"]` و `d.get("city")`؟', options: [
+      { text: 'الاتنين بيرجعوا None' },
+      { text: 'الأولى بترمي خطأ KeyError والتانية بترجع None' },
+      { text: 'الأولى بترجع None والتانية بترمي خطأ' }
+    ], answer: 1, explain: 'القوس المربع على مفتاح مش موجود بيعمل KeyError، أما get فبتتحمل الغياب وترجع None أو القيمة الافتراضية اللي تحددها.' },
+    { q: 'عندك `sales` قايمة قواميس. إزاي تجيب مدينة تالت طلب؟', options: [
+      { text: 'sales[3]["city"]', mono: true },
+      { text: 'sales[2]["city"]', mono: true },
+      { text: 'sales["city"][2]', mono: true }
+    ], answer: 1, explain: 'تالت طلب رقمه 2 لأن العد من صفر، وبعدين ناخد مفتاح city من القاموس ده.' }
+  ],
+  exercises: [
+    { task: 'اعمل قاموس يمثل طلب جديد: المنتج Mouse والمدينة Cairo والإيراد 500، واطبع المنتج منه', code: `order = {"product_name": "Mouse", "city": "Cairo", "revenue": 500}
+print(order["product_name"])   # Mouse`, why: 'القاموس بيتكتب بأزواج مفتاح: قيمة بين قوسين معكوفين.' },
+    { task: 'في المعمل، اطبع اسم منتج وإيراد أول صفين من `sales` باستخدام الفهرسة', code: `print(sales[0]["product_name"], sales[0]["revenue"])   # Laptop 12000
+print(sales[1]["product_name"], sales[1]["revenue"])   # Chair 2000`, why: 'sales جاهزة في المعمل. sales[0] أول قاموس، والمفتاح بيجيب القيمة.' },
+    { task: 'استخدم `get` مع قيمة افتراضية عشان تقرأ مفتاح `discount` مش موجود في أول طلب', code: `print(sales[0].get("discount", 0))   # 0`, why: 'get مع قيمة افتراضية بترجع 0 بدل ما الكود يقع بـ KeyError. مفيدة جداً مع الداتا الناقصة.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'conditions',
+  nav: 'الشروط if',
+  title: 'الدرس 6: الشروط if / elif / else',
+  subtitle: 'خلّي الكود ياخد قرارات: ده أساس الفلترة والتصنيف',
+  blocks: [
+    { type: 'p', text: 'الشرط بيخلي الكود ينفذ حاجة بس لو حاجة تانية متحققة. زي ما تقول: لو الإيراد أكبر من 10000 اعتبر الطلب كبير:' },
+    { type: 'code', code: `revenue = 12000
+if revenue > 10000:
+    print("طلب كبير")
+else:
+    print("طلب عادي")` },
+    { type: 'note', warn: true, text: 'حاجتين مهمين جداً في الشكل: نقطتين `:` في آخر سطر الشرط، والمسافة البادئة (4 مسافات) قبل الكود اللي جوه الشرط. المسافة دي مش شكل، دي اللي بتقول لـ Python إن السطر تابع للشرط. لو نسيتها هيطلع خطأ IndentationError.' },
+    { type: 'h', text: 'أكتر من احتمال بـ elif' },
+    { type: 'code', code: `revenue = 4500
+if revenue >= 10000:
+    print("كبير")
+elif revenue >= 3000:
+    print("وسط")
+else:
+    print("صغير")` },
+    { type: 'p', text: 'Python بتجرب الشروط بالترتيب من فوق لتحت، وأول شرط يتحقق بيتنفذ والباقي بيتتخطى. عشان كده ترتيب الشروط مهم: حط الأخص قبل الأعم.' },
+    { type: 'h', text: 'علامات المقارنة' },
+    { type: 'table', head: ['العلامة', 'المعنى'], rows: [
+      ['==', 'يساوي'],
+      ['!=', 'لا يساوي'],
+      ['> و <', 'أكبر من / أصغر من'],
+      ['>= و <=', 'أكبر من أو يساوي / أصغر من أو يساوي']
+    ]},
+    { type: 'note', warn: true, text: 'أشهر غلطة في البداية: `==` للمقارنة و `=` للتخزين. `if revenue = 500` خطأ. الصح: `if revenue == 500`.' },
+    { type: 'h', text: 'دمج الشروط بـ and و or و not' },
+    { type: 'code', code: `revenue = 12000
+city = "Cairo"
+if revenue > 10000 and city == "Cairo":
+    print("طلب كبير في القاهرة")
+if city == "Giza" or city == "Alexandria":
+    print("بره القاهرة")
+if not city == "Cairo":
+    print("دي مش القاهرة")` },
+    { type: 'p', text: '`and` محتاجة الشرطين مع بعض، و `or` محتاجة واحد منهم بس، و `not` بتعكس النتيجة.' },
+    { type: 'h', text: 'ليه ده مهم في التحليل؟' },
+    { type: 'p', text: 'كل حاجة اسمها تصنيف أو فلترة وراها شروط: "قسم الطلبات لكبيرة وصغيرة"، "استبعد القيم الفاضية"، "علم على الشهور اللي نزلت عن المتوسط". لما توصل لـ pandas هتلاقي نفس المنطق ده بالظبط بس بصيغة أسرع.' }
+  ],
+  quiz: [
+    { q: 'إيه اللي هيتطبع؟', code: `x = 7
+if x > 10:
+    print("أكبر")
+elif x > 5:
+    print("وسط")
+else:
+    print("صغير")`, options: [
+      { text: 'أكبر' },
+      { text: 'وسط' },
+      { text: 'صغير' }
+    ], answer: 1, explain: 'x مش أكبر من 10، بس أكبر من 5، فتاني شرط هو اللي بيتحقق.' },
+    { q: 'إيه الخطأ في الكود ده؟', code: `revenue = 5000
+if revenue = 5000:
+    print("خمس تلاف")`, options: [
+      { text: 'المسافة البادئة ناقصة بس' },
+      { text: 'المقارنة لازم تكون == مش = ' },
+      { text: 'مفيش خطأ' }
+    ], answer: 1, explain: 'علامة = للتخزين و == للمقارنة. جوه if لازم == وإلا SyntaxError.' },
+    { q: 'عايز الشرط يتحقق لو المدينة Cairo أو Giza. أنهي صح؟', options: [
+      { text: 'if city == "Cairo" or "Giza":', mono: true },
+      { text: 'if city == "Cairo" or city == "Giza":', mono: true },
+      { text: 'if city == "Cairo" and city == "Giza":', mono: true }
+    ], answer: 1, explain: 'كل شرط لازم يكون كامل لوحده. الأولى غلط شائعة (Python هتفهم "Giza" كقيمة صحيحة دايماً)، والتالتة مستحيلة لأن المدينة مش ممكن تساوي حاجتين في نفس الوقت.' }
+  ],
+  exercises: [
+    { task: 'اكتب كود يطبع "إيراد كبير" لو `revenue` أكبر من أو يساوي 10000 و "إيراد عادي" غير كده. جربه على قيمة 12000', code: `revenue = 12000
+if revenue >= 10000:
+    print("إيراد كبير")
+else:
+    print("إيراد عادي")`, why: 'لاحظ >= عشان 10000 نفسها تدخل في الكبير. لو استخدمت > بس هتستبعدها.' },
+    { task: 'صنف أول طلب في `sales`: لو إيراده فوق 10000 اطبع "A"، لو فوق 5000 اطبع "B"، غير كده اطبع "C"', code: `revenue = sales[0]["revenue"]
+if revenue > 10000:
+    print("A")
+elif revenue > 5000:
+    print("B")
+else:
+    print("C")`, why: 'أول طلب إيراده 12000 فهيطبع A. ترتيب الشروط من الأعلى للأقل هو الصح.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'loops',
+  nav: 'الحلقات Loops',
+  title: 'الدرس 7: الحلقات for و while',
+  subtitle: 'هنا بتبدأ تمشي على كل صفوف الداتا بسطرين',
+  blocks: [
+    { type: 'p', text: 'الحلقة (Loop) بتكرر نفس الكود على كل عنصر. بدل ما تكتب `print(sales[0])` و `print(sales[1])` لحد ما تخلص، تكتب:' },
+    { type: 'code', code: `revenues = [12000, 2000, 500, 13000, 4000]
+for r in revenues:
+    print(r)` },
+    { type: 'p', text: 'اقرأها: "لكل قيمة `r` جوه `revenues`، نفذ اللي تحت". المتغير `r` بياخد قيمة كل عنصر بالترتيب، والكود اللي جوه (بمسافة بادئة) بيتنفذ مع كل واحدة.' },
+    { type: 'h', text: 'التجميع بالحلقة: مجموع الإيرادات بإيدك' },
+    { type: 'code', code: `revenues = [12000, 2000, 500, 13000, 4000]
+total = 0
+for r in revenues:
+    total = total + r
+print(total)   # 31500` },
+    { type: 'p', text: 'بدأنا بعدّاد `total = 0` وكل لفة بنديله القيمة الجديدة. دي أهم فكرة في التحليل كله: عداد + حلقة = أي تجميع (مجموع، عدد، متوسط). وليها اختصار: `total += r` نفس المعنى.' },
+    { type: 'h', text: 'حلقة + شرط = فلترة' },
+    { type: 'code', code: `revenues = [12000, 2000, 500, 13000, 4000]
+big = []
+for r in revenues:
+    if r > 4000:
+        big.append(r)
+print(big)   # [12000, 13000]` },
+    { type: 'p', text: 'دي بالظبط فكرة فلترة الصفوف: قايمة فاضية، ولف، وضيف اللي يحقق الشرط بس.' },
+    { type: 'h', text: 'range واللف على الجدول' },
+    { type: 'code', code: `for i in range(3):
+    print(i)   # 0 ثم 1 ثم 2
+
+# اللف على جدول المبيعات في المعمل:
+for order in sales:
+    print(order["product_name"], order["revenue"])` },
+    { type: 'p', text: '`range(3)` بتديك الأرقام 0 و1 و2 (النهاية مش بتتاخد). بس في التحليل غالباً هتلف على الداتا نفسها زي المثال التاني: كل لفة `order` بيكون قاموس صف كامل.' },
+    { type: 'h', text: 'الاختصار المحترف: List Comprehension' },
+    { type: 'code', code: `revenues = [12000, 2000, 500, 13000, 4000]
+# بدل 4 سطور: حلقة + شرط + append
+big = [r for r in revenues if r > 4000]
+print(big)                      # [12000, 13000]
+doubled = [r * 2 for r in revenues]
+print(doubled)                  # [24000, 4000, 1000, 26000, 8000]` },
+    { type: 'p', text: 'الصيغة: `[القيمة الجديدة for عنصر in القايمة if شرط]`. هتشوفها كتير في كود ناس تانية، فلازم تكون قادر تقرأها براحتك.' },
+    { type: 'h', text: 'while باختصار' },
+    { type: 'code', code: `n = 1
+while n < 5:
+    print(n)
+    n = n + 1   # من غير السطر ده الحلقة مش هتقف أبداً!` },
+    { type: 'note', warn: true, text: 'حلقة `while` بتفضل شغالة طول ما الشرط متحقق. لو نسيت تحدث المتغير جوه الحلقة، هتدخل في حلقة لا نهائية والمتصفح هيعلق. في تحليل البيانات `for` هي اللي هتستخدمها 95% من الوقت.' }
+  ],
+  quiz: [
+    { q: 'إيه اللي هيتطبع؟', code: `total = 0
+for x in [10, 20, 30]:
+    total += x
+print(total)`, options: [
+      { text: '30', mono: true },
+      { text: '60', mono: true },
+      { text: '102030', mono: true }
+    ], answer: 1, explain: 'العداد بيجمع كل قيمة: 0+10+20+30 = 60. لاحظ إن x متغير عادي ممكن يكون أي اسم.' },
+    { q: 'إيه ناتج `[r * 2 for r in [1, 2, 3]]`؟', options: [
+      { text: '[1, 2, 3]', mono: true },
+      { text: '[2, 4, 6]', mono: true },
+      { text: '[2, 2, 2]', mono: true }
+    ], answer: 1, explain: 'كل عنصر بيتحط مكانه ضعفه: 1×2 و 2×2 و 3×2.' },
+    { q: 'عايز تعد كام طلب إيراده فوق 5000 في قايمة `revenues`. أنهي كود صح؟', options: [
+      { text: 'count = 0 ثم حلقة فيها if r > 5000: count += 1', mono: true },
+      { text: 'count(r > 5000)', mono: true },
+      { text: 'revenues.count(5000)', mono: true }
+    ], answer: 0, explain: 'النمط الصح: عداد يبدأ من صفر، حلقة تلف، وشرط يزود العداد. count الخاصة بالقوائم بتعد قيمة معينة بالظبط مش شرط.' }
+  ],
+  exercises: [
+    { task: 'احسب مجموع إيرادات كل الطلبات في `sales` بحلقة for وعداد (المفروض يطلع 59000)', code: `total = 0
+for order in sales:
+    total += order["revenue"]
+print(total)   # 59000`, why: 'ده أول رقم تحقق حقيقي: مجموع الداتا كاملة. في المشروع النهائي هنستخدمه كاختبار صحة.' },
+    { task: 'اطلع قايمة فيها أسماء منتجات الطلبات اللي إيرادها فوق 4000 بس', code: `big_products = []
+for order in sales:
+    if order["revenue"] > 4000:
+        big_products.append(order["product_name"])
+print(big_products)
+
+# أو بسطر واحد:
+print([o["product_name"] for o in sales if o["revenue"] > 4000])`, why: 'الطريقتين نفس النتيجة: Laptop و Laptop و Desk و Laptop و Desk. جرب الاتنين في المعمل.' },
+    { task: 'عد كام طلب كان في مدينة Cairo', code: `count = 0
+for order in sales:
+    if order["city"] == "Cairo":
+        count += 1
+print(count)   # 6`, why: 'نفس نمط العداد والشرط، بس الشرط هنا على نص مش رقم.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'functions',
+  nav: 'الدوال Functions',
+  title: 'الدرس 8: الدوال Functions',
+  subtitle: 'علّم Python حسبة مرة واحدة واستخدمها ألف مرة',
+  blocks: [
+    { type: 'p', text: 'الدالة (Function) هي كتلة كود ليها اسم، بتاخد مدخلات وترجع نتيجة. إنت استخدمت دوال جاهزة كتير لحد دلوقتي: `print` و `len` و `sum`. دلوقتي هتكتب دوالك أنت:' },
+    { type: 'code', code: `def add_vat(price):
+    return price * 1.14
+
+print(add_vat(1000))    # 1140.0
+print(add_vat(12000))   # 13680.0` },
+    { type: 'p', text: '`def` معناها "عرف دالة"، والاسم اللي بعدها، وبين القوسين المدخلات (Parameters). `return` بترجع النتيجة وبتنهي الدالة. أي كود جوه الدالة لازم يكون بمسافة بادئة زي الشروط والحلقات.' },
+    { type: 'h', text: 'أكتر من مدخل وقيم افتراضية' },
+    { type: 'code', code: `def order_summary(product, revenue, vat_rate=0.14):
+    total = revenue * (1 + vat_rate)
+    return f"{product}: الإجمالي بعد الضريبة {round(total)}"
+
+print(order_summary("Laptop", 12000))            # ضريبة 14% الافتراضية
+print(order_summary("Chair", 2000, 0.05))        # ضريبة مختلفة` },
+    { type: 'p', text: 'المدخل اللي ليه قيمة افتراضية (`vat_rate=0.14`) تقدر تتجاهله فياخد الافتراضية، أو تديله قيمة تانية. لازم المدخلات اللي من غير افتراضية تيجي الأول.' },
+    { type: 'h', text: 'الفرق بين return و print' },
+    { type: 'code', code: `def bad_double(x):
+    print(x * 2)      # بتعرض بس، مش بترجع
+
+def good_double(x):
+    return x * 2      # بترجع قيمة تقدر تكمل عليها
+
+result = good_double(21)
+print(result + 1)     # 43` },
+    { type: 'note', warn: true, text: 'لو الدالة معملتش `return` فهي بترجع `None`. أشهر لخبطة للمبتدئين: دالة بتطبع النتيجة بدل ما ترجعها، وبعدين لما تحاول تستخدم النتيجة في حسبة تانية تلاقي None. في التحليل، خلي دوالك ترجع القيم واطبع بره.' },
+    { type: 'h', text: 'مثال تحليلي كامل: متوسط الإيراد لمدينة معينة' },
+    { type: 'code', code: `def city_average(sales_data, city_name):
+    total = 0
+    count = 0
+    for order in sales_data:
+        if order["city"] == city_name:
+            total += order["revenue"]
+            count += 1
+    if count == 0:
+        return 0
+    return total / count
+
+print(city_average(sales, "Cairo"))        # 3333.33...
+print(city_average(sales, "Alexandria"))   # 10166.66...` },
+    { type: 'p', text: 'لاحظ التكوين: الدالة بتستقبل الداتا والمدينة، وفيها حلقة وشرط وعداد، وفي الآخر بترجع المتوسط. كل اللي اتعلمناه بيتركب جوه بعض كده.' },
+    { type: 'h', text: 'lambda: دوال صغيرة في سطر' },
+    { type: 'code', code: `add_vat = lambda price: price * 1.14
+print(add_vat(1000))   # 1140.0
+
+# أشهر استخدام: الترتيب حسب قيمة محسوبة
+top = sorted(sales, key=lambda order: order["revenue"], reverse=True)
+print(top[0]["product_name"], top[0]["revenue"])   # Laptop 13000` },
+    { type: 'p', text: '`lambda` بتعمل دالة سريعة من غير اسم. استخدامها الأشهر هو `key=` في الترتيب: "رتب الطلبات حسب الإيراد". هتلاقي نفس الفكرة دي في `sort_values` لما توصل لـ pandas.' }
+  ],
+  quiz: [
+    { q: 'إيه اللي هيتطبع؟', code: `def f(x):
+    return x * 3
+
+print(f(f(2)))`, options: [
+      { text: '6', mono: true },
+      { text: '12', mono: true },
+      { text: '18', mono: true }
+    ], answer: 2, explain: 'f(2) ترجع 6، وبعدين f(6) ترجع 18. النداءات المتداخلة بتتنفذ من جوه لبره.' },
+    { q: 'دالة جسمها `print(x * 2)` من غير return. هترجع إيه لما تندهها؟', options: [
+      { text: 'ضعف x' },
+      { text: 'None' },
+      { text: 'خطأ' }
+    ], answer: 1, explain: 'أي دالة مفيهاش return بترجع None تلقائياً، حتى لو طبعت حاجة على الشاشة. الطباعة عرض، مش إرجاع قيمة.' },
+    { q: 'عايز ترتب `sales` من الأعلى إيراد للأقل. أنهي صح؟', options: [
+      { text: 'sorted(sales, key=lambda o: o["revenue"], reverse=True)', mono: true },
+      { text: 'sorted(sales, reverse=True)', mono: true },
+      { text: 'sales.sort("revenue")', mono: true }
+    ], answer: 0, explain: 'القواميس ميعرفهاش تترتب لوحدها، فلازم key يقول رتب حسب أنهي قيمة. و reverse=True للترتيب التنازلي.' }
+  ],
+  exercises: [
+    { task: 'اكتب دالة `order_size` بتاخد إيراد وترجع نص: "كبير" لو فوق 10000، "وسط" لو فوق 3000، "صغير" غير كده. وجربها على 12000 و 4500', code: `def order_size(revenue):
+    if revenue > 10000:
+        return "كبير"
+    elif revenue > 3000:
+        return "وسط"
+    else:
+        return "صغير"
+
+print(order_size(12000))   # كبير
+print(order_size(4500))    # وسط`, why: 'الدالة بتغلف منطق التصنيف عشان تستخدمه في أي مكان من غير ما تعيد كتابته.' },
+    { task: 'اكتب دالة `total_by_category` بتاخد sales واسم فئة، وترجع مجموع إيراد الفئة ده. جربها على "Tech" (المفروض 39300)', code: `def total_by_category(sales_data, category_name):
+    total = 0
+    for order in sales_data:
+        if order["category"] == category_name:
+            total += order["revenue"]
+    return total
+
+print(total_by_category(sales, "Tech"))       # 39300
+print(total_by_category(sales, "Furniture"))  # 19700`, why: 'حلقة + شرط + عداد جوه دالة. ده بالظبط اللي groupby في pandas هتعمله في سطر واحد بعدين.' },
+    { task: 'استخدم lambda مع sorted عشان ترتب الطلبات بالتاريخ من الأقدم للأحدث، واطبع تاريخ أول وآخر طلب', code: `by_date = sorted(sales, key=lambda o: o["order_date"])
+print(by_date[0]["order_date"])    # 2025-01-03
+print(by_date[-1]["order_date"])   # 2025-04-25`, why: 'التواريخ متخزنة كنصوص بصيغة سنة-شهر-يوم، والصيغة دي بتترتب صح أبجدياً. دي ميزة صيغة ISO.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'files',
+  nav: 'الملفات وقراءة CSV',
+  title: 'الدرس 9: قراءة الملفات والتعامل مع الأخطاء',
+  subtitle: 'الداتا الحقيقية بتيجي في ملفات CSV، وهنا بتتعلم تقرأها',
+  blocks: [
+    { type: 'p', text: 'لحد دلوقتي الداتا كانت مكتوبة جوه الكود. في الشغل الحقيقي، الداتا بتيجي في ملفات، وأشهر صيغة هي CSV: ملف نصي كل سطر فيه صف، والأعمدة متفصولة بفواصل:' },
+    { type: 'code', code: `order_id,order_date,product_name,city,revenue
+1,2025-01-03,Laptop,Cairo,12000
+2,2025-01-15,Chair,Giza,2000` },
+    { type: 'h', text: 'قراءة ملف نصي سطر سطر' },
+    { type: 'code', code: `with open("sales_data.csv") as f:
+    lines = f.readlines()
+
+print(lines[0])   # السطر الأول: أسماء الأعمدة (الهيدر)
+print(len(lines)) # عدد السطور` },
+    { type: 'p', text: 'كلمة `with` بتفتح الملف وتقفله لوحدها لما تخلص (حتى لو حصل خطأ في النص). `readlines` بترجع قايمة فيها كل سطر كنص.' },
+    { type: 'h', text: 'تحويل الـ CSV لقايمة قواميس بإيدك' },
+    { type: 'code', code: `rows = []
+with open("sales_data.csv") as f:
+    header = f.readline().strip().split(",")   # أسماء الأعمدة
+    for line in f:
+        values = line.strip().split(",")
+        row = dict(zip(header, values))        # اربط كل عمود بقيمته
+        row["revenue"] = float(row["revenue"]) # حول الرقم لـ float
+        rows.append(row)
+
+print(rows[0])              # أول صف كقاموس
+print(len(rows))            # عدد الصفوف` },
+    { type: 'p', text: 'الفكرة: أول سطر هو الهيدر، و `zip` بتمشي على القايمتين مع بعض وتربط كل عمود بقيمته، و `dict` بتحولهم لقاموس. كده وصلنا لنفس شكل `sales` اللي اتمرنا عليه. (في المعمل تقدر تعمل ملف وتقرأه: البيئة فيها نظام ملفات افتراضي.)' },
+    { type: 'h', text: 'مكتبة csv الجاهزة' },
+    { type: 'code', code: `import csv
+
+with open("sales_data.csv") as f:
+    rows = list(csv.DictReader(f))
+
+print(rows[0]["product_name"])   # Laptop
+print(len(rows))` },
+    { type: 'p', text: '`import` بتحمل مكتبة جاهزة. مكتبة `csv` فيها `DictReader` بيعمل كل اللي عملناه بإيدنا في سطر واحد، وبيحل مشاكل زي الفواصل جوه النصوص. كل القيم لسه نصوص، فلازم تحول الأرقام بنفسك.' },
+    { type: 'h', text: 'try / except: متخليش صف واحد مضروب يوقفك' },
+    { type: 'code', code: `values = ["12000", "2000", "مش رقم", "500"]
+total = 0
+skipped = 0
+for v in values:
+    try:
+        total += float(v)
+    except ValueError:
+        skipped += 1
+
+print(total)    # 14500.0
+print(skipped)  # 1` },
+    { type: 'p', text: 'الكود اللي ممكن يقع بيتحط جوه `try`، ولو حصل الخطأ المتوقع (`ValueError` هنا) بيتنفذ اللي في `except` والبرنامج يكمل. في التحليل ده معناه: عد الصفوف المضروبة وقرر تتعامل معاها إزاي، بدل ما التحليل كله يقف.' },
+    { type: 'note', text: 'بعد درسين هتشوف `pandas.read_csv` اللي بتعمل كل ده في سطر واحد وترجع جدول جاهز للتحليل. فهمت بقى إيه اللي بيحصل تحت الغطاء، وده اللي بيفرق محلل فاهم من واحد بيحفظ أوامر.' }
+  ],
+  quiz: [
+    { q: 'إيه فايدة كلمة `with` في فتح الملفات؟', options: [
+      { text: 'بتخلي الملف يتقرأ أسرع' },
+      { text: 'بتقفل الملف تلقائياً بعد ما تخلص حتى لو حصل خطأ' },
+      { text: 'بتحول الملف لقاموس' }
+    ], answer: 1, explain: 'with بتدير المورد: تفتح وتضمن القفل. نسيان قفل الملفات ممكن يسبب مشاكل في ملفات كبيرة أو أنظمة معينة.' },
+    { q: 'قرأت عمود revenue من CSV وكل القيم طلعت نصوص. إيه المشكلة لو جمعتهم على طول؟', options: [
+      { text: '"12000" + "2000" هتديك "120002000" (دمج نصوص مش جمع)' },
+      { text: 'Python هترفض تماماً وترمي خطأ' },
+      { text: 'هيتجمعوا صح عادي' }
+    ], answer: 0, explain: 'جمع النصوص بيدمجهم جنب بعض. لازم تحول بـ float أو int الأول. دي من أكتر المصايد في قراءة CSV.' },
+    { q: 'إيه اللي هيحصل في الكود ده؟', code: `try:
+    x = float("abc")
+except ValueError:
+    x = 0
+print(x)`, options: [
+      { text: 'البرنامج يقف بخطأ', mono: true },
+      { text: 'يطبع 0', mono: true },
+      { text: 'يطبع abc', mono: true }
+    ], answer: 1, explain: 'float("abc") بترمي ValueError، فـ except بتمسكه وتحط x بصفر والبرنامج يكمل ويطبع 0.' }
+  ],
+  exercises: [
+    { task: 'في المعمل: اكتب ملف CSV صغير من سطرين، وبعدين اقراه واطبع عدد سطوره', code: `# اكتب الملف في نظام الملفات الافتراضي بتاع المعمل
+with open("test.csv", "w") as f:
+    f.write("name,revenue\\nLaptop,12000\\nChair,2000\\n")
+
+# اقراه
+with open("test.csv") as f:
+    lines = f.readlines()
+print(len(lines))        # 3
+print(lines[0].strip())  # name,revenue`, why: 'وضع "w" للكتابة و \\n لسطر جديد. معمل المتصفح فيه نظام ملفات افتراضي، فالتجربة حقيقية بس من غير ما تلمس جهازك.' },
+    { task: 'عندك قايمة قراءات فيها قيم مضروبة: `["100", "250", "N/A", "80"]`. احسب مجموع القيم السليمة بس باستخدام try/except', code: `values = ["100", "250", "N/A", "80"]
+total = 0
+for v in values:
+    try:
+        total += int(v)
+    except ValueError:
+        pass
+print(total)   # 430`, why: 'pass معناها "متعملش حاجة وكمل". N/A اتخطت من غير ما توقف الحلقة.' }
+  ]
+}
+);
+
+</script>
+<script>
+/* Curriculum part 3: numpy, pandas 1, pandas 2 */
+CURRICULUM.push(
+{
+  id: 'numpy',
+  nav: 'NumPy: الحسابات السريعة',
+  title: 'الدرس 10: NumPy، محرك الحسابات',
+  subtitle: 'أول مكتبة خارجية، واللي مبني عليها pandas نفسها',
+  blocks: [
+    { type: 'p', text: 'NumPy (نطقها "نم-باي") هي مكتبة الحسابات الرقمية الأساسية في عالم Python. الفكرة: بدل ما تلف على القايمة عنصر عنصر، NumPy بتنفذ العملية على العمود كله مرة واحدة، وده أسرع بكتير لما الأرقام تبقى بالملايين. في المعمل بتتحمل لوحدها أول ما تكتب `import numpy`.' },
+    { type: 'code', code: `import numpy as np
+
+revenues = np.array([12000, 2000, 500, 13000, 4000])
+print(revenues)          # [12000  2000   500 13000  4000]
+print(type(revenues))    # <class 'numpy.ndarray'>` },
+    { type: 'p', text: '`as np` ده الاختصار المتفق عليه عالمياً، هتلاقيه في أي كود على الإنترنت. الـ array زي القايمة بس كل عناصرها من نفس النوع ومتخزنة بشكل أسرع.' },
+    { type: 'h', text: 'العمليات على العمود كله مرة واحدة (Vectorization)' },
+    { type: 'code', code: `revenues = np.array([12000, 2000, 500, 13000, 4000])
+print(revenues * 1.14)        # ضريبة 14% على كل القيم مرة واحدة
+print(revenues + 100)         # زيادة ثابتة على الكل
+print(revenues / 1000)        # بالآلاف: [12.  2.  0.5 13.  4.]` },
+    { type: 'p', text: 'قارن بدرس الحلقات: كنا محتاجين 4 سطور عشان نضرب كل عنصر في 2. هنا سطر واحد. مفيش حلقة مكتوبة، بس العملية اتنفذت على كل عنصر.' },
+    { type: 'h', text: 'الإحصائيات الجاهزة' },
+    { type: 'code', code: `revenues = np.array([12000, 2000, 500, 13000, 4000])
+print(revenues.sum())      # 31500
+print(revenues.mean())     # 6300.0 : المتوسط
+print(revenues.std())      # الانحراف المعياري
+print(revenues.max())      # 13000
+print(revenues.min())      # 500
+print(revenues.argmax())   # 3 : مكان (فهرس) أكبر قيمة` },
+    { type: 'p', text: 'لاحظ إنها Methods على الـ array نفسه: `revenues.sum()` مش `sum(revenues)` (رغم إن التانية شغالة برضه).' },
+    { type: 'h', text: 'الفلترة بالأقنعة المنطقية (Boolean Masking)' },
+    { type: 'code', code: `revenues = np.array([12000, 2000, 500, 13000, 4000])
+mask = revenues > 4000
+print(mask)               # [ True False False  True False]
+print(revenues[mask])     # [12000 13000]
+# أو في سطر واحد:
+print(revenues[revenues > 4000])` },
+    { type: 'p', text: 'المقارنة `revenues > 4000` بترجع array من True/False بنفس الطول، ولما تحطه جوه الأقواس المربعة بيفلتر: بيسيب بس الأماكن اللي فيها True. دي أهم تقنية في NumPy، وهي نفسها أساس الفلترة في pandas.' },
+    { type: 'h', text: 'إحصائيات على جزء من البيانات' },
+    { type: 'code', code: `revenues = np.array([12000, 2000, 500, 13000, 4000])
+big = revenues[revenues > 4000]
+print(big.mean())         # 12500.0 : متوسط الطلبات الكبيرة
+print(len(big))           # 2 : عددهم
+print((revenues > 4000).sum())  # 2 : True بتتحسب 1، فالمجموع هو العدد` },
+    { type: 'note', text: 'الخدعة الأخيرة مهمة جداً: `.sum()` على قناع منطقي بتعد كام صف حقق الشرط. هتستخدمها كتير: "كام طلب فوق المتوسط؟" في سطر واحد.' }
+  ],
+  quiz: [
+    { q: 'إيه ناتج `np.array([1, 2, 3]) * 2`؟', options: [
+      { text: '[1, 2, 3, 1, 2, 3]', mono: true },
+      { text: '[2, 4, 6]', mono: true },
+      { text: 'خطأ', mono: true }
+    ], answer: 1, explain: 'في NumPy الضرب بينفذ على كل عنصر (عكس القوائم العادية اللي الضرب في 2 بيكررها). دي ميزة الـ vectorization.' },
+    { q: 'إيه ناتج `(np.array([5, 10, 15]) > 8).sum()`؟', options: [
+      { text: '25', mono: true },
+      { text: '2', mono: true },
+      { text: '[False, True, True]', mono: true }
+    ], answer: 1, explain: 'المقارنة بترجع [False, True, True]، وجمع True كأنه 1 بيدينا 2: عدد القيم اللي فوق 8.' },
+    { q: 'عايز متوسط القيم اللي فوق 100 بس في array اسمه `x`. أنهي صح؟', options: [
+      { text: 'x[x > 100].mean()', mono: true },
+      { text: 'x.mean(x > 100)', mono: true },
+      { text: 'mean(x) > 100', mono: true }
+    ], answer: 0, explain: 'الفلترة بالقناع الأول وبعدين mean على النتيجة. التانية صيغة غلط والتالتة بتقارن المتوسط نفسه بـ 100.' }
+  ],
+  exercises: [
+    { task: 'حول إيرادات `sales` لـ NumPy array واحسب المجموع والمتوسط وأعلى قيمة', code: `import numpy as np
+
+revenues = np.array([o["revenue"] for o in sales])
+print(revenues.sum())    # 59000
+print(revenues.mean())   # 4916.66...
+print(revenues.max())    # 13000`, why: 'لاحظ استخدام list comprehension اللي اتعلمناها عشان نطلع عمود الإيراد من قايمة القواميس.' },
+    { task: 'عد كام طلب إيراده فوق متوسط الإيراد العام', code: `import numpy as np
+
+revenues = np.array([o["revenue"] for o in sales])
+avg = revenues.mean()
+print((revenues > avg).sum())   # 3`, why: 'أول حساب المتوسط (حوالي 4917)، وبعدين قناع + sum بيعد اللي فوقه: اللابتوبات التلاتة بس.' },
+    { task: 'احسب إجمالي الإيراد بعد ضريبة 14% لكل الطلبات، في سطرين بس', code: `import numpy as np
+
+revenues = np.array([o["revenue"] for o in sales])
+print((revenues * 1.14).sum())   # 67260.0`, why: 'الضرب على العمود كله مرة واحدة، وبعدين sum. 59000 × 1.14 = 67260 بالظبط، وده check كويس للنتيجة.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'pandas1',
+  nav: 'pandas: أول DataFrame',
+  title: 'الدرس 11: pandas، الجدول الذكي',
+  subtitle: 'المكتبة اللي هتقضي معاها 80% من وقتك كمحلل بيانات',
+  blocks: [
+    { type: 'p', text: 'pandas هي أهم مكتبة في تحليل البيانات. بتديك حاجتين: `Series` (عمود واحد) و `DataFrame` (جدول كامل بأعمدة وصفوف). أي حاجة عملناها لحد دلوقتي بحلقات وعدادات، pandas بتعملها في سطر. في المعمل بتتحمل لوحدها أول ما تعمل import.' },
+    { type: 'code', code: `import pandas as pd
+
+df = pd.DataFrame(sales)   # حول قايمة القواميس لجدول
+print(df.head(3))          # أول 3 صفوف
+print(df.shape)            # (12, 7) : 12 صف و 7 أعمدة
+print(df.columns.tolist()) # أسماء الأعمدة` },
+    { type: 'p', text: '`head()` بتوريك أول كام صف عشان تتطمن على شكل الداتا، و `shape` بتقولك الأبعاد. دول أول سطرين بيتكتبوا في أي تحليل حقيقي.' },
+    { type: 'h', text: 'اختيار عمود والحساب عليه' },
+    { type: 'code', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+print(df["revenue"])          # عمود كامل (Series)
+print(df["revenue"].sum())    # 59000
+print(df["revenue"].mean())   # 4916.66...
+print(df["revenue"].describe())  # ملخص إحصائي كامل` },
+    { type: 'p', text: '`describe()` كنز: بتديك العدد والمتوسط والانحراف المعياري والأقل والأعلى والربعيات في أمر واحد. أول نظرة على أي عمود رقمي لازم تكون بيها.' },
+    { type: 'h', text: 'فلترة الصفوف' },
+    { type: 'code', code: `big = df[df["revenue"] > 4000]
+print(big[["product_name", "revenue"]])   # أعمدة مختارة من الصفوف الكبيرة
+
+cairo = df[df["city"] == "Cairo"]
+print(len(cairo))                          # 6
+
+# شرطين مع بعض: لاحظ الأقواس وعلامة &
+tech_cairo = df[(df["category"] == "Tech") & (df["city"] == "Cairo")]
+print(len(tech_cairo))                     # 3` },
+    { type: 'note', warn: true, text: 'في pandas بنستخدم `&` للـ and و `|` للـ or، وكل شرط لازم يتقفل في قوس لوحده. `df[(a) & (b)]` صح، `df[a & b]` هيطلع خطأ غامض.' },
+    { type: 'h', text: 'إضافة عمود محسوب' },
+    { type: 'code', code: `df["revenue_with_vat"] = df["revenue"] * 1.14
+df["month"] = df["order_date"].str[:7]   # أول 7 حروف: 2025-01
+print(df[["product_name", "revenue", "revenue_with_vat", "month"]].head(3))` },
+    { type: 'p', text: 'عمود جديد بيتعمل بمجرد ما تسندله قيمة. `.str` بتفتحلك دوال النصوص (اللي اتعلمناها في درس 3) على عمود كامل.' },
+    { type: 'h', text: 'قراءة ملف CSV حقيقي' },
+    { type: 'code', code: `df = pd.read_csv("sales_data.csv")
+print(df.head())
+print(df.dtypes)   # نوع كل عمود زي ما pandas فهمته` },
+    { type: 'p', text: 'سطر واحد بدل كل كود درس الملفات. pandas بتفهم الهيدر وتحزر أنواع الأعمدة لوحدها. ملف `sales_data.csv` موجود في المستودع للتنزيل لو حابب تتمرن على جهازك أو Colab.' },
+    { type: 'note', text: 'قاعدة ذهبية: متعملش بحلقات على صفوف الـ DataFrame اللي ممكن pandas تعمله بسطر. الحلقات في pandas أبطأ بكتير وأصعب في القراءة. لو لقيت نفسك بتكتب for على صفوف جدول، اسأل: "pandas عندها دالة للده؟" غالباً آه.' }
+  ],
+  quiz: [
+    { q: 'إيه ناتج `df.shape` لجدول فيه 12 صف و 7 أعمدة؟', options: [
+      { text: '(7, 12)', mono: true },
+      { text: '(12, 7)', mono: true },
+      { text: '84', mono: true }
+    ], answer: 1, explain: 'shape بترجع (عدد الصفوف, عدد الأعمدة). الصفوف الأول دايماً.' },
+    { q: 'عايز الصفوف اللي مدينتها Giza من جدول `df`. أنهي صح؟', options: [
+      { text: 'df["city" == "Giza"]', mono: true },
+      { text: 'df[df["city"] == "Giza"]', mono: true },
+      { text: 'df.filter("Giza")', mono: true }
+    ], answer: 1, explain: 'الشرط الكامل df["city"] == "Giza" بيرجع Series منطقية، وتحطها جوه أقواس df[...] عشان تفلتر. دي نفس فكرة الأقنعة في NumPy.' },
+    { q: 'عايز الصفوف اللي إيرادها فوق 5000 وفي فئة Tech. أنهي تركيبة صح؟', options: [
+      { text: 'df[(df["revenue"] > 5000) & (df["category"] == "Tech")]', mono: true },
+      { text: 'df[df["revenue"] > 5000 and df["category"] == "Tech"]', mono: true },
+      { text: 'df[(df["revenue"] > 5000) | (df["category"] == "Tech")]', mono: true }
+    ], answer: 0, explain: 'لازم & مش and، وكل شرط في قوس. علامة | هتجيب اللي يحقق أي واحد منهم وده مش المطلوب.' }
+  ],
+  exercises: [
+    { task: 'حول `sales` لـ DataFrame واطبع الملخص الإحصائي لعمود الإيراد', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+print(df["revenue"].describe())`, why: 'describe بتديك: count=12 و mean≈4916.67 و min=500 و max=13000. قارن الأرقام دي باللي حسبناه بإيدنا قبل كده.' },
+    { task: 'اطلع جدول فيه الطلبات اللي في Giza بس، بعمودين: المنتج والإيراد', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+giza = df[df["city"] == "Giza"]
+print(giza[["product_name", "revenue"]])`, why: 'الفلترة الأول ترجع جدول أصغر، وبعدين نختار منه الأعمدة المطلوبة بقائمة أسماء جوه قوسين مربعين مزدوجين.' },
+    { task: 'أضف عمود `revenue_level` قيمته "كبير" لو الإيراد فوق 10000 و "عادي" غير كده، واطبع أول 5 صفوف', code: `import pandas as pd
+import numpy as np
+
+df = pd.DataFrame(sales)
+df["revenue_level"] = np.where(df["revenue"] > 10000, "كبير", "عادي")
+print(df[["product_name", "revenue", "revenue_level"]].head())`, why: 'np.where(شرط, قيمة_لو_صح, قيمة_لو_غلط) هي طريقة if/else على عمود كامل مرة واحدة. شغالة في المعمل لأن numpy بتتحمل مع pandas.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'pandas2',
+  nav: 'pandas: تجميع ودمج وتنضيف',
+  title: 'الدرس 12: groupby والدمج والقيم الناقصة',
+  subtitle: 'الثلاثي اللي بيحل 90% من أسئلة التحليل اليومية',
+  blocks: [
+    { type: 'h', text: 'groupby: قسم، طبق، اجمع' },
+    { type: 'p', text: 'سؤال زي "إجمالي الإيراد لكل مدينة" معناه: قسم الصفوف لمجموعات حسب المدينة، احسب المجموع في كل مجموعة، اجمع النتايج في جدول. ده بالظبط اللي `groupby` بتعمله:' },
+    { type: 'code', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+by_city = df.groupby("city")["revenue"].sum()
+print(by_city)
+# city
+# Alexandria    30500
+# Cairo         20000
+# Giza           8500` },
+    { type: 'code', code: `# أكتر من إحصائية في نفس الوقت بـ agg
+summary = df.groupby("category")["revenue"].agg(["sum", "mean", "count"])
+print(summary)
+#            sum      mean  count
+# Furniture  19700  3940.0      5
+# Tech       39300  7860.0      5
+
+# التجميع بعمودين
+print(df.groupby(["city", "category"])["revenue"].sum())` },
+    { type: 'p', text: 'قارن النتايج دي بالدالة اللي كتبناها بإيدنا في درس الدوال: نفس الأرقام (Tech = 39300)، بس في سطر واحد ومن غير حلقات.' },
+    { type: 'h', text: 'الترتيب وأعلى القيم' },
+    { type: 'code', code: `top3 = df.sort_values("revenue", ascending=False).head(3)
+print(top3[["product_name", "city", "revenue"]])
+
+# عدد مرات ظهور كل قيمة
+print(df["product_name"].value_counts())` },
+    { type: 'h', text: 'القيم الناقصة (NaN)' },
+    { type: 'code', code: `import numpy as np
+
+data = [
+    {"product": "Laptop", "revenue": 12000},
+    {"product": "Chair", "revenue": np.nan},   # قيمة ناقصة
+    {"product": "Mouse", "revenue": 500},
+]
+d = pd.DataFrame(data)
+print(d.isna().sum())          # revenue    1 : عد الناقص في كل عمود
+print(d["revenue"].sum())      # 12500.0 : pandas بتتجاهل الناقص في الحساب
+filled = d.fillna({"revenue": 0})
+print(filled["revenue"].sum()) # نفس النتيجة هنا، بس مكانتش دايماً كده!` },
+    { type: 'note', warn: true, text: 'قرار التعامل مع الناقص قرار تحليلي مش تقني: هل الصفر منطقي؟ ولا المتوسط؟ ولا نحذف الصف بـ `dropna`؟ الإجابة بتعتمد على معنى البيانات. المتوسط بيتأثر بالتعويض، والحذف بيقلل العينة. وثق قرارك دايماً في التقرير.' },
+    { type: 'h', text: 'الدمج merge: ربط جدولين' },
+    { type: 'code', code: `costs = pd.DataFrame([
+    {"product_name": "Laptop", "cost": 9000},
+    {"product_name": "Desk", "cost": 3000},
+    {"product_name": "Chair", "cost": 1200},
+    {"product_name": "Mouse", "cost": 250},
+])
+merged = df.merge(costs, on="product_name", how="left")
+merged["profit"] = merged["revenue"] - merged["cost"]
+print(merged[["product_name", "revenue", "cost", "profit"]].head())` },
+    { type: 'p', text: '`merge` بتوصل جدولين بعمود مشترك، زي VLOOKUP في Excel بس أقوى. `how="left"` معناها: خد كل صفوف الجدول الأيسر (المبيعات) حتى لو مفيش تكلفة مقابلة. لو كتبت `how="inner"` هتسقط أي صف ملوش مقابل.' },
+    { type: 'note', text: 'بعد أي merge اسأل نفسك: عدد الصفوف زاد ولا قل؟ `print(len(df), len(merged))`. لو العدد زاد يبقى فيه تكرار في مفتاح الربط محتاج تحقيق. دي من أهم فحوصات الجودة.' }
+  ],
+  quiz: [
+    { q: 'إيه ناتج `df.groupby("category")["revenue"].sum()` على داتا المبيعات؟', options: [
+      { text: 'جدول فيه مجموع الإيراد لكل فئة (Tech وFurniture)' },
+      { text: 'مجموع كل الإيرادات في رقم واحد' },
+      { text: 'عدد الصفوف في كل فئة' }
+    ], answer: 0, explain: 'groupby بتقسم حسب الفئة وبعدين sum بتحسب جوه كل مجموعة. النتيجة: Tech=39300 و Furniture=19700. عشان العدد نستخدم count أو size.' },
+    { q: 'عمود revenue فيه قيمة NaN. إيه اللي `df["revenue"].sum()` بتعمله بيها؟', options: [
+      { text: 'بيحسبها صفر ويكمل' },
+      { text: 'بيتجاهلها ويكمل' },
+      { text: 'بيرمي خطأ' }
+    ], answer: 1, explain: 'دوال pandas الافتراضية بتتخطى القيم الناقصة. بس خد بالك: count بيعد الموجود بس، فالمتوسط مثلاً بيتقسم على عدد أقل.' },
+    { q: 'دمجت جدول مبيعات (12 صف) مع جدول تكاليف بـ left merge والنتيجة طلعت 20 صف. إيه التفسير الأقرب؟', options: [
+      { text: 'ده طبيعي، merge دايماً بيزود الصفوف' },
+      { text: 'فيه تكرار في عمود الربط في جدول التكاليف' },
+      { text: 'فيه قيم ناقصة في المبيعات' }
+    ], answer: 1, explain: 'لو مفتاح الربط مكرر في الجدول التاني، كل صف مبيعات بيتضرب في عدد التكرارات. دي مصيدة merge الأشهر ولازم تتفحص بعدد الصفوف قبل وبعد.' }
+  ],
+  exercises: [
+    { task: 'احسب إجمالي ومتوسط الإيراد لكل منتج، مرتبين من الأعلى', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+result = df.groupby("product_name")["revenue"].agg(["sum", "mean"])
+print(result.sort_values("sum", ascending=False))`, why: 'المفروض يطلع: Laptop مجموع 37500، Desk 13500، Chair 6200، Mouse 1800. دي نفس أرقام مشروع SQL اللي فات.' },
+    { task: 'استخرج عمود month من التاريخ (أول 7 حروف) واحسب إجمالي الإيراد الشهري', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+df["month"] = df["order_date"].str[:7]
+print(df.groupby("month")["revenue"].sum())
+# 2025-01    14500
+# 2025-02    19000
+# 2025-03    17600
+# 2025-04     7900`, why: 'التجميع الشهري من أكتر التحليلات المطلوبة. لاحظ إن أبريل نازل جداً، ده اكتشاف حقيقي هنحلله في المشروع.' },
+    { task: 'ادمج جدول المبيعات مع جدول تكاليف المنتجات، واحسب إجمالي الربح لكل مدينة', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+costs = pd.DataFrame([
+    {"product_name": "Laptop", "cost": 9000},
+    {"product_name": "Desk", "cost": 3000},
+    {"product_name": "Chair", "cost": 1200},
+    {"product_name": "Mouse", "cost": 250},
+])
+merged = df.merge(costs, on="product_name", how="left")
+print(len(df), len(merged))   # 12 12 : اتأكدنا إن الدمج مضربش الصفوف
+merged["profit"] = merged["revenue"] - merged["cost"]
+print(merged.groupby("city")["profit"].sum())`, why: 'فحص عدد الصفوف قبل الحساب. المفروض يطلع: Alexandria=21400، Cairo=13550، Giza=5350، والإجمالي 40300.' }
+  ]
+}
+);
+
+CURRICULUM.push(
+{
+  id: 'viz',
+  nav: 'الرسم البياني matplotlib',
+  title: 'الدرس 13: الرسم البياني مع matplotlib',
+  subtitle: 'الرقم بيقنع، بس الرسمة بتوصل أسرع',
+  blocks: [
+    { type: 'p', text: 'matplotlib هي مكتبة الرسم الأساسية في Python، وأغلب مكتبات الرسم التانية مبنية عليها. في المعمل الرسمة بتظهر تحت الكود على طول لما تستخدم `plt`.' },
+    { type: 'code', code: `import matplotlib.pyplot as plt
+
+months = ["2025-01", "2025-02", "2025-03", "2025-04"]
+revenue = [14500, 19000, 17600, 7900]
+
+plt.plot(months, revenue, marker="o")
+plt.title("Monthly Revenue")
+plt.xlabel("Month")
+plt.ylabel("Revenue")
+plt.show()` },
+    { type: 'p', text: 'الخطوات ثابتة: جهز البيانات، اختار نوع الرسمة (`plot` خط، `bar` أعمدة، `hist` توزيع)، ضيف عنوان وأسماء محاور، وبعدين `plt.show()`.' },
+    { type: 'h', text: 'رسم الأعمدة: مقارنة الفئات' },
+    { type: 'code', code: `import matplotlib.pyplot as plt
+
+products = ["Laptop", "Desk", "Chair", "Mouse"]
+totals = [37500, 13500, 6200, 1800]
+
+plt.bar(products, totals)
+plt.title("Revenue by Product")
+plt.ylabel("Revenue")
+plt.show()` },
+    { type: 'h', text: 'الهيستوجرام: شكل التوزيع' },
+    { type: 'code', code: `import matplotlib.pyplot as plt
+import pandas as pd
+
+df = pd.DataFrame(sales)
+plt.hist(df["revenue"], bins=6)
+plt.title("Revenue Distribution")
+plt.xlabel("Revenue")
+plt.ylabel("Count")
+plt.show()` },
+    { type: 'p', text: 'الهيستوجرام بيقسم القيم لفترات وبيعد كام قيمة في كل فترة. من الرسمة دي هتشوف إن أغلب الطلبات صغيرة وفي كام طلب كبار جداً، وده معناه إن المتوسط لوحده مضلل.' },
+    { type: 'h', text: 'من pandas مباشرة' },
+    { type: 'code', code: `import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame(sales)
+df["month"] = df["order_date"].str[:7]
+monthly = df.groupby("month")["revenue"].sum()
+monthly.plot(kind="bar", title="Monthly Revenue")
+plt.ylabel("Revenue")
+plt.show()` },
+    { type: 'p', text: 'النتيجة بتطلع من `groupby` مباشرة للرسمة. دي أقصر سلسلة تحليل: جدول ← تجميع ← رسمة، في 4 سطور.' },
+    { type: 'h', text: 'أنهي نوع رسمة لأنهي سؤال؟' },
+    { type: 'table', head: ['السؤال', 'الرسمة المناسبة'], rows: [
+      ['تغير عبر الزمن', 'خط plot'],
+      ['مقارنة فئات', 'أعمدة bar'],
+      ['توزيع قيمة رقمية', 'هيستوجرام hist'],
+      ['علاقة بين رقمين', 'نقط scatter']
+    ]},
+    { type: 'note', warn: true, text: 'اكتب العناوين وأسماء المحاور بالإنجليزي في matplotlib: العربي بيظهر معكوس ومقطع من غير مكتبات إضافية. في تقريرك النهائي اشرح الرسمة بالعربي في الكلام حوالينها.' },
+    { type: 'note', text: 'في مكتبة اسمها seaborn بتطلع رسومات أشيك بسطر واحد فوق matplotlib. بعد ما تتقن الأساسيات هنا، جربها في مشاريعك: `import seaborn as sns`.' }
+  ],
+  quiz: [
+    { q: 'عايز تبين تطور المبيعات شهر بشهر. أنهي رسمة أنسب؟', options: [
+      { text: 'plt.bar', mono: true },
+      { text: 'plt.plot', mono: true },
+      { text: 'plt.hist', mono: true }
+    ], answer: 1, explain: 'التغير عبر الزمن بينتعرف أسرع بخط: الصعود والهبوط بيبانوا في لمحة. الأعمدة شغالة برضه بس الخط أقوى للاتجاه.' },
+    { q: 'إيه وظيفة `plt.show()`؟', options: [
+      { text: 'بتحفظ الرسمة في ملف' },
+      { text: 'بتعرض الرسمة المجهزة على الشاشة' },
+      { text: 'بتمسح الرسمة القديمة' }
+    ], answer: 1, explain: 'matplotlib بتجمع عناصر الرسمة في الذاكرة، و show بترسمها فعلياً. في المعمل الرسمة بتظهر تحت مخرجات الكود مباشرة.' },
+    { q: 'عملت groupby على الشهور وحسبت المجموع. أسرع طريق لرسمة أعمدة؟', options: [
+      { text: 'أحول النتيجة لقوايم وأستخدم plt.bar' },
+      { text: 'monthly.plot(kind="bar") مباشرة على النتيجة', mono: true },
+      { text: 'مينفعش أرسم من نتيجة groupby' }
+    ], answer: 1, explain: 'نتيجة groupby هي Series ليها plot جاهزة. التحويل اليدوي شغال بس أطول وأعرضة للغلط.' }
+  ],
+  exercises: [
+    { task: 'ارسم خط يبين الإيراد الشهري (استخدم groupby على الشهر) مع عنوان واسم محور', code: `import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame(sales)
+df["month"] = df["order_date"].str[:7]
+monthly = df.groupby("month")["revenue"].sum()
+plt.plot(monthly.index, monthly.values, marker="o")
+plt.title("Monthly Revenue")
+plt.xlabel("Month")
+plt.ylabel("Revenue")
+plt.show()`, why: 'index هي الشهور و values هي المجاميع. الرسمة هتبين صعود فبراير وبعدين هبوط أبريل الحاد.' },
+    { task: 'ارسم أعمدة لمقارنة إجمالي الإيراد بين الفئتين Tech و Furniture', code: `import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame(sales)
+by_cat = df.groupby("category")["revenue"].sum()
+plt.bar(by_cat.index, by_cat.values)
+plt.title("Revenue by Category")
+plt.ylabel("Revenue")
+plt.show()`, why: 'Tech أعلى بمرتين تقريباً (39300 مقابل 19700). الرسمة بتوصل المعلومة دي في ثانية.' }
+  ]
+}
+);
+
+</script>
+<script>
+/* Curriculum part 4: capstone project */
+CURRICULUM.push(
+{
+  id: 'capstone',
+  nav: 'المشروع النهائي: تحليل المبيعات',
+  title: 'الدرس 14: مشروع تحليل مبيعات كامل من الأول للآخر',
+  subtitle: 'ركب كل اللي اتعلمته في تحليل حقيقي ترفعه GitHub',
+  blocks: [
+    { type: 'p', text: 'المشروع: تحليل مبيعات متجر تجريبي في 4 شهور. الداتا مصنوعة للتعلم ومش معاملات شركة حقيقية. الداتا موجودة في المعمل باسم `sales`، ونفسها موجودة في ملف sales_data.csv للتنزيل من المستودع عشان تشتغل عليها في Colab أو على جهازك. كل صف طلب واحد فيه منتج واحد، وorder_id فريد في الداتا دي.' },
+    { type: 'h', text: '1. افهم الداتا وحدد مستوى الصف' },
+    { type: 'code', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+print(df.shape)          # (12, 7)
+print(df.head(3))
+print(df["revenue"].sum())   # 59000` },
+    { type: 'p', text: 'الأعمدة: order_id رقم الطلب، order_date التاريخ، product_name المنتج، category الفئة، city المدينة، customer اسم عميل تجريبي، revenue إيراد الطلب. عدد الطلبات 12، والإيراد الإجمالي 59000 وحدة نقدية افتراضية. مفيش عمود تكلفة أو ربح في الداتا الأساسية، فمتسميش الإيراد ربح.' },
+    { type: 'h', text: '2. فحص الجودة قبل التحليل' },
+    { type: 'code', code: `print(df.isna().sum())                    # عدد الناقص في كل عمود (المفروض أصفار)
+print(df["order_id"].duplicated().sum())  # 0 : مفيش طلب مكرر
+print((df["revenue"] < 0).sum())          # 0 : مفيش إيراد سالب` },
+    { type: 'p', text: 'المتوقع: كل الفحوصات صفر. في داتا حقيقية لو لقيت مشاكل، وثقها وقرر: تعويض ولا حذف ولا رجوع للمصدر. القرار لازم يكون مكتوب في التقرير.' },
+    { type: 'h', text: '3. سؤال واضح: مين أعلى منتج؟' },
+    { type: 'code', code: `by_product = df.groupby("product_name")["revenue"].sum().sort_values(ascending=False)
+print(by_product)
+# Laptop    37500
+# Desk      13500
+# Chair      6200
+# Mouse      1800
+print(round(37500 / 59000 * 100, 2))   # 63.56% من الإيراد` },
+    { type: 'p', text: 'اللابتوب حوالي 63.56% من الإيراد. ده تركيز عالي في منتج واحد يستحق الفحص، مش دليل لوحده إننا نزود مخزونه: محتاجين هامش الربح والتوافر والطلب الفعلي.' },
+    { type: 'h', text: '4. الاتجاه الشهري والنمو' },
+    { type: 'code', code: `df["month"] = df["order_date"].str[:7]
+monthly = df.groupby("month")["revenue"].sum()
+print(monthly)
+# 2025-01    14500
+# 2025-02    19000
+# 2025-03    17600
+# 2025-04     7900
+growth = monthly.pct_change() * 100
+print(growth.round(2))
+# 2025-02    31.03%
+# 2025-03    -7.37%
+# 2025-04   -55.11%` },
+    { type: 'p', text: '`pct_change` بتحسب النسبة المئوية للتغير عن الصف اللي قبله. أول شهر NaN لأن مفيش شهر سابق. أبريل نزل 55% عن مارس، وده أهم اكتشاف في الداتا: في شهر واحد نازل بشكل حاد ومحتاج تفسير (الداتا تعليمية، بس في الحقيقة هنا بتسأل: هل فيه مشكلة توزيع؟ موسمية؟ بيانات ناقصة؟).' },
+    { type: 'h', text: '5. الفئات والمدن ونسبة كل منهم' },
+    { type: 'code', code: `by_cat = df.groupby("category")["revenue"].sum()
+share = (by_cat / by_cat.sum() * 100).round(2)
+print(share)
+# Tech         66.61%
+# Furniture    33.39%
+
+print(df.groupby("city")["revenue"].sum().sort_values(ascending=False))
+# Alexandria    30500
+# Cairo         20000
+# Giza           8500` },
+    { type: 'p', text: 'متساويش حجم الإيراد بجودة المدينة: مفيش عندنا عدد سكان أو ميزانية تسويق أو تكلفة شحن. القول الصح: "الإسكندرية أعلى إيراد في العينة دي" مش "الإسكندرية أفضل سوق".' },
+    { type: 'h', text: '6. اختبر النتيجة وصالح المجاميع' },
+    { type: 'code', code: `check = df.groupby("city")["revenue"].sum().sum()
+print(check)                 # 59000
+print(check == df["revenue"].sum())   # True` },
+    { type: 'p', text: 'مجموع المدن لازم يساوي المجموع الكلي. دي reconciliation check بسيطة تمسك أخطاء الفلترة والدمج. في مشروعك اكتب اختبار عدد الصفوف قبل وبعد أي merge كمان.' },
+    { type: 'h', text: '7. ارسم القصة' },
+    { type: 'code', code: `import matplotlib.pyplot as plt
+
+monthly.plot(kind="bar", title="Monthly Revenue")
+plt.ylabel("Revenue")
+plt.show()` },
+    { type: 'p', text: 'رسمة واحدة كفيلة تخلي أي حد يشوف مشكلة أبريل فوراً. حط الرسمات المهمة في التقرير مع جملة تفسير تحت كل واحدة.' },
+    { type: 'h', text: '8. حول التدريب لمشروعك أنت على GitHub' },
+    { type: 'p', text: 'افتح repo جديد من زر New في GitHub، سميه مثلاً sales-python-analysis، وارفع فيه: ملف الداتا sales_data.csv، وملف الكود analysis.py (أو نوتبوك Colab)، وREADME.md فيه القالب ده:' },
+    { type: 'code', code: `# Sales Python Analysis
+## Goal
+Analyze a synthetic 12-order dataset with pandas.
+## Data
+Synthetic training data, January-April 2025.
+One row per single-product order; revenue is not profit.
+## Questions
+Top products, monthly growth, city and category shares.
+## Findings
+[Run the analysis and write your own verified numbers.]
+## Checks
+Row count, missing values, duplicate keys, reconciled totals.
+## Limits
+Small synthetic sample; no cost, inventory or marketing data.
+## Files
+sales_data.csv, analysis.py, charts/` },
+    { type: 'h', text: 'معيار التسليم' },
+    { type: 'list', items: [
+      'الكود بيشتغل من الأول للآخر من غير أخطاء ويطلع نفس الأرقام المذكورة.',
+      'خمسة أسئلة على الأقل، ولكل سؤال كود ونتيجة وتفسير وحدود.',
+      'استخدام groupby وفلترة وعمود محسوب ورسمة واحدة على الأقل في مواضع تخدم السؤال.',
+      'راجع كل رقم مع ناتج الكود، واحفظ صور الرسمات المهمة.',
+      'اكتب README بصوتك واشرح المشروع لشخص تاني من غير ما تقرأ الكود.'
+    ]},
+    { type: 'note', text: 'خلصت الرحلة كاملة! دلوقتي عندك أساس Python لتحليل البيانات: اللغة نفسها، NumPy، pandas، والرسم، ومشروع تقدر توريه لأي حد. الخطوة الجاية: كرر نفس المنهج على داتا حقيقية من موقع Kaggle وحدد مصدرها وترخيصها.' }
+  ],
+  quiz: [
+    { q: 'ليه بنعمل reconciliation check زي "مجموع المدن = المجموع الكلي"؟', options: [
+      { text: 'عشان نتأكد إن مفيش صفوف اتضربت أو اتفقدت في التجميع أو الدمج' },
+      { text: 'عشان نخلي الكود أسرع' },
+      { text: 'عشان نملأ القيم الناقصة' }
+    ], answer: 0, explain: 'لو المجموعين مختلفين يبقى فيه خطأ في الطريق: صفوف ضاعت في فلترة أو اتضاعفت في merge. الفحص ده بيمسك الغلط قبل ما يوصل للتقرير.' },
+    { q: '`monthly.pct_change()` بتحسب إيه؟', options: [
+      { text: 'نسبة كل شهر من الإجمالي' },
+      { text: 'نسبة التغير بين كل شهر واللي قبله' },
+      { text: 'المتوسط التراكمي' }
+    ], answer: 1, explain: 'pct_change = (الحالي - السابق) / السابق. أول قيمة NaN لأن مفيش سابق. لو عايز نسبة من الإجمالي هتقسم على sum.' },
+    { q: 'إيه أهم حاجة تتكتب في README لمشروع تحليل؟', options: [
+      { text: 'كل أسطر الكود منسوقة' },
+      { text: 'الهدف ومصدر البيانات والنتايج بأرقام متأكد منها وحدود التحليل' },
+      { text: 'قايمة بكل دوال pandas المستخدمة' }
+    ], answer: 1, explain: 'القارئ (ومدير التوظيف) عايز يفهم: إنت سألت إيه، لقيت إيه، وإيه حدود كلامك. الكود نفسه موجود في ملفاته.' }
+  ],
+  exercises: [
+    { task: 'نفذ خطوة فحص الجودة كاملة على داتا sales وتأكد إن كل النتايج صفر', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+print("ناقص:", df.isna().sum().sum())
+print("مكرر:", df["order_id"].duplicated().sum())
+print("سالب:", (df["revenue"] < 0).sum())`, why: 'التلاتة المفروض يطلعوا 0. لو أي رقم طلع غير كده في داتا حقيقية، وقف التحليل وحقق الأول.' },
+    { task: 'اكتب تحليل صغير من عندك: إجمالي الإيراد لكل عميل (customer) مرتب تنازلي، وحدد مين أكبر عميل', code: `import pandas as pd
+
+df = pd.DataFrame(sales)
+by_customer = df.groupby("customer")["revenue"].sum().sort_values(ascending=False)
+print(by_customer)
+print("أكبر عميل:", by_customer.index[0], "بإجمالي", by_customer.iloc[0])`, why: 'Mona أكبر عميل بإجمالي 30500 (3 طلبات لابتوب وديسك). index[0] اسم أول صف و iloc[0] قيمته.' }
+  ]
+}
+);
+
+</script>
+<script>
+/* SQL من الصفر : rendering engine + progress tracking */
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'py-da-zero-progress-v1';
+
+  function loadProgress() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var p = JSON.parse(raw);
+        if (p && typeof p === 'object') {
+          p.answers = p.answers || {};
+          p.done = p.done || {};
+          return p;
+        }
+      }
+    } catch (e) { /* corrupted storage -> start fresh */ }
+    return { answers: {}, done: {} };
+  }
+
+  function saveProgress() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch (e) {}
+  }
+
+  var progress = loadProgress();
+
+  /* ---------- helpers ---------- */
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /* very small Python highlighter: comments, strings, numbers, keywords */
+  var KEYWORDS = ['def','return','if','elif','else','for','while','in','not','and','or','import','from','as','class','try','except','finally','with','lambda','pass','break','continue','raise','print','True','False','None','is','del'];
+  var KW_RE = new RegExp('\\b(' + KEYWORDS.join('|') + ')\\b', 'g');
+
+  function highlight(sql) {
+    var out = esc(sql);
+    var parts = out.split(/(#[^\n]*)/g);
+    for (var i = 0; i < parts.length; i++) {
+      if (i % 2 === 1) { parts[i] = '<span class="c">' + parts[i] + '</span>'; continue; }
+      var seg = parts[i].split(/('[^']*')/g);
+      for (var j = 0; j < seg.length; j++) {
+        if (j % 2 === 1) { seg[j] = '<span class="s">' + seg[j] + '</span>'; continue; }
+        seg[j] = seg[j]
+          .replace(KW_RE, '<span class="k">$1</span>')
+          .replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="n">$1</span>');
+      }
+      parts[i] = seg.join('');
+    }
+    return '<pre><code>' + parts.join('') + '</code></pre>';
+  }
+
+  function renderInline(text) {
+    /* `code` spans inside normal text */
+    return esc(text).replace(/`([^`]+)`/g, function (_, c) {
+      return '<span class="kw">' + c + '</span>';
+    });
+  }
+
+  /* ---------- progress ---------- */
+  function totalLessons() { return CURRICULUM.length; }
+  function doneCount() {
+    var n = 0;
+    CURRICULUM.forEach(function (l) { if (progress.done[l.id]) n++; });
+    return n;
+  }
+
+  function refreshProgressUI() {
+    var pct = totalLessons() ? Math.round(doneCount() / totalLessons() * 100) : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = pct + '%';
+    CURRICULUM.forEach(function (l) {
+      var el = document.querySelector('.nav-item[data-id="' + l.id + '"]');
+      if (el) { el.classList.toggle('done', !!progress.done[l.id]); el.querySelector('.check').textContent=progress.done[l.id]?'✓':''; }
+    });
+  }
+
+  /* ---------- nav ---------- */
+  function buildNav() {
+    var nav = document.getElementById('nav');
+    nav.innerHTML = '';
+    CURRICULUM.forEach(function (l, idx) {
+      var item = document.createElement('button');
+      item.type='button';
+      item.className = 'nav-item';
+      item.dataset.id = l.id;
+      item.innerHTML = '<span class="check">' + (progress.done[l.id] ? '✓' : '') + '</span>' +
+        '<span class="num">' + (idx + 1) + '</span><span>' + esc(l.nav) + '</span>';
+      item.addEventListener('click', function () {
+        openLesson(l.id);
+        document.getElementById('sidebar').classList.remove('open');
+      });
+      nav.appendChild(item);
+    });
+  }
+
+  /* ---------- lesson rendering ---------- */
+  function renderBlocks(blocks) {
+    var html = '';
+    blocks.forEach(function (b) {
+      if (b.type === 'p') html += '<p>' + renderInline(b.text) + '</p>';
+      else if (b.type === 'h') html += '<h3>' + esc(b.text) + '</h3>';
+      else if (b.type === 'code') html += highlight(b.code);
+      else if (b.type === 'note') html += '<div class="note' + (b.warn ? ' warn' : '') + '">' + renderInline(b.text) + '</div>';
+      else if (b.type === 'list') {
+        html += '<ul>' + b.items.map(function (i) { return '<li>' + renderInline(i) + '</li>'; }).join('') + '</ul>';
+      } else if (b.type === 'table') {
+        html += '<table class="demo"><tr>' + b.head.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') + '</tr>' +
+          b.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') +
+          '</table>';
+      }
+    });
+    return html;
+  }
+
+  var currentLesson = null;
+
+  function openLesson(id) {
+    var lesson = null, idx = -1;
+    CURRICULUM.forEach(function (l, i) { if (l.id === id) { lesson = l; idx = i; } });
+    if (!lesson) return;
+    currentLesson = lesson;
+    document.getElementById('lab').hidden = true;
+    document.getElementById('lesson').style.display = 'block';
+    progress.lastLesson = id; saveProgress();
+
+    document.getElementById('hero').style.display = 'none';
+    var host = document.getElementById('lesson');
+
+    var html = '<div class="lesson">';
+    html += '<h2 class="lesson-title">' + esc(lesson.title) + '</h2>';
+    html += '<div class="lesson-sub">' + esc(lesson.subtitle) + '</div>';
+    html += renderBlocks(lesson.blocks);
+    html += '<div class="quiz-box" id="quiz-box"><h3>🧠 اختبر نفسك</h3><div id="quiz-qs"></div><div class="quiz-result" id="quiz-result"></div></div>';
+    html += '<div class="exercise-box"><h3>✍️ تمارين عملية</h3><div id="exs"></div></div>';
+    html += '<div class="complete-badge" id="complete-badge">🎉 مبروك! خلصت الدرس ده. كمل اللي بعده 👇</div>';
+    html += '<div class="lesson-nav">';
+    html += '<button id="prev-btn"' + (idx === 0 ? ' disabled' : '') + '>→ الدرس اللي فات</button>';
+    html += '<button id="next-btn" class="next-btn"' + (idx === CURRICULUM.length - 1 ? ' disabled' : '') + '>الدرس اللي بعده ←</button>';
+    html += '</div></div>';
+
+    host.innerHTML = html;
+
+    buildQuiz(lesson);
+    buildExercises(lesson);
+
+    document.getElementById('prev-btn').addEventListener('click', function () {
+      if (idx > 0) openLesson(CURRICULUM[idx - 1].id);
+    });
+    document.getElementById('next-btn').addEventListener('click', function () {
+      if (idx < CURRICULUM.length - 1) openLesson(CURRICULUM[idx + 1].id);
+    });
+
+    document.querySelectorAll('.nav-item').forEach(function (n) {
+      n.classList.toggle('active', n.dataset.id === id);
+    });
+    refreshProgressUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ---------- quiz ---------- */
+  function buildQuiz(lesson) {
+    var qsHost = document.getElementById('quiz-qs');
+    lesson.quiz.forEach(function (q, qi) {
+      var box = document.createElement('div');
+      box.className = 'quiz-q';
+      var qid = lesson.id + ':' + qi;
+
+      var qhtml = '<div class="q-text">' + (qi + 1) + '. ' + renderInline(q.q) + '</div>';
+      if (q.code) qhtml += highlight(q.code);
+      box.innerHTML = qhtml;
+
+      var answered = progress.answers[qid];
+      var fb = document.createElement('div');
+      fb.className = 'feedback';
+
+      q.options.forEach(function (opt, oi) {
+        var btn = document.createElement('button');
+        btn.className = 'opt';
+        btn.innerHTML = opt.mono ? '<span class="mono">' + esc(opt.text) + '</span>' : renderInline(opt.text);
+        btn.addEventListener('click', function () {
+          if (progress.answers[qid] !== undefined) return;
+          var correct = (oi === q.answer);
+          progress.answers[qid] = { picked: oi, correct: correct };
+          saveProgress();
+          paint();
+          checkQuizDone(lesson);
+        });
+        box.appendChild(btn);
+      });
+      box.appendChild(fb);
+      qsHost.appendChild(box);
+
+      function paint() {
+        var rec = progress.answers[qid];
+        var btns = box.querySelectorAll('.opt');
+        btns.forEach(function (b, oi) {
+          b.disabled = rec !== undefined;
+          if (rec !== undefined) {
+            if (oi === q.answer) b.classList.add('correct');
+            else if (oi === rec.picked) b.classList.add('wrong');
+          }
+        });
+        if (rec !== undefined) {
+          fb.className = 'feedback ' + (rec.correct ? 'ok' : 'no');
+          fb.innerHTML = (rec.correct ? '✅ صح! ' : '❌ مش دي. ') + renderInline(q.explain);
+        }
+      }
+      paint();
+    });
+    checkQuizDone(lesson);
+  }
+
+  function checkQuizDone(lesson) {
+    var total = lesson.quiz.length, answered = 0, correct = 0;
+    lesson.quiz.forEach(function (q, qi) {
+      var rec = progress.answers[lesson.id + ':' + qi];
+      if (rec !== undefined) { answered++; if (rec.correct) correct++; }
+    });
+    var result = document.getElementById('quiz-result');
+    if (answered === total && total > 0) {
+      if (correct === total && !progress.done[lesson.id]) {
+        progress.done[lesson.id] = true;
+        saveProgress();
+      }
+      result.classList.add('show');
+      result.innerHTML = '🏁 خلصت كويز الدرس: ' + correct + ' من ' + total + ' صح' +
+        (correct === total ? ' : أداء مثالي 👏' : ' : راجع اللي غلطت فيه فوق وافهم ليه');
+      if (correct===total) document.getElementById('complete-badge').classList.add('show');
+      else { const retry=document.createElement('button'); retry.className='solution-toggle';retry.textContent='حاول الكويز تاني';retry.onclick=()=>{lesson.quiz.forEach((q,i)=>delete progress.answers[lesson.id+':'+i]);saveProgress();openLesson(lesson.id);};result.appendChild(retry); }
+      refreshProgressUI();
+    }
+  }
+
+  /* ---------- exercises ---------- */
+  function buildExercises(lesson) {
+    var host = document.getElementById('exs');
+    lesson.exercises.forEach(function (ex, i) {
+      var box = document.createElement('div');
+      box.className = 'exercise';
+      var html = '<div class="task">تمرين ' + (i + 1) + ': ' + renderInline(ex.task) + '</div>';
+      if (ex.hint) html += '<p style="color:var(--muted);font-size:.88rem">💡 تلميح: ' + renderInline(ex.hint) + '</p>';
+      html += '<label>اكتب محاولتك قبل الحل:</label><textarea class="attempt" dir="ltr" rows="4" spellcheck="false" aria-label="محاولتك"></textarea><p class="small">جرب الكود في معمل Python من الشريط فوق. المحاولة هنا للمذاكرة، مش تصحيح تلقائي.</p><button class="solution-toggle">أظهر الحل النموذجي</button>';
+      html += '<div class="solution">' + highlight(ex.code) +
+        (ex.why ? '<div class="why">' + renderInline(ex.why) + '</div>' : '') + '</div>';
+      box.innerHTML = html;
+      var btn = box.querySelector('.solution-toggle');
+      var sol = box.querySelector('.solution');
+      var attempt=box.querySelector('.attempt');var ak='attempt:'+lesson.id+':'+i;attempt.value=progress[ak]||'';attempt.oninput=()=>{progress[ak]=attempt.value;saveProgress();};
+      btn.addEventListener('click', function () {
+        sol.classList.toggle('open');
+        btn.textContent = sol.classList.contains('open') ? 'إخفي الحل' : 'أظهر الحل النموذجي';
+      });
+      host.appendChild(box);
+    });
+  }
+
+  /* ---------- reset + menu ---------- */
+  document.getElementById('reset-btn').addEventListener('click', function () {
+    if (confirm('متأكد إنك عايز تمسح كل تقدمك وتبدأ من الأول؟')) {
+      progress = { answers: {}, done: {} };
+      saveProgress();
+      buildNav();
+      refreshProgressUI();
+      if (currentLesson) openLesson(currentLesson.id);
+    }
+  });
+
+  document.getElementById('menu-toggle').addEventListener('click', function () {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+  /* ---------- boot ---------- */
+  buildNav();
+  refreshProgressUI();
+})();
+
+</script>
+<script>
+/* معمل Python: Pyodide runner */
+(function(){
+let pyodide=null, ns=null, ready=false;
+const lab=document.getElementById('lab');
+const input=document.getElementById('py-input'),out=document.getElementById('py-output');
+const runBtn=document.getElementById('run-py'),resetBtn=document.getElementById('reset-py');
+document.getElementById('lab-link').onclick=()=>{document.getElementById('hero').style.display='none';document.getElementById('lesson').style.display='none';lab.hidden=false;};
+document.getElementById('home-link').onclick=()=>{lab.hidden=true;document.getElementById('lesson').style.display='none';document.getElementById('hero').style.display='block';};
+document.getElementById('start-btn').onclick=()=>{document.querySelector('.nav-item').click();};
+
+const BOOTSTRAP = `
+sales = [
+    {"order_id": 1, "order_date": "2025-01-03", "product_name": "Laptop", "category": "Tech", "city": "Cairo", "customer": "Aya", "revenue": 12000},
+    {"order_id": 2, "order_date": "2025-01-15", "product_name": "Chair", "category": "Furniture", "city": "Giza", "customer": "Ali", "revenue": 2000},
+    {"order_id": 3, "order_date": "2025-01-21", "product_name": "Mouse", "category": "Tech", "city": "Cairo", "customer": "Omar", "revenue": 500},
+    {"order_id": 4, "order_date": "2025-02-05", "product_name": "Laptop", "category": "Tech", "city": "Alexandria", "customer": "Mona", "revenue": 13000},
+    {"order_id": 5, "order_date": "2025-02-14", "product_name": "Desk", "category": "Furniture", "city": "Cairo", "customer": "Aya", "revenue": 4000},
+    {"order_id": 6, "order_date": "2025-02-25", "product_name": "Chair", "category": "Furniture", "city": "Giza", "customer": "Ali", "revenue": 2000},
+    {"order_id": 7, "order_date": "2025-03-04", "product_name": "Mouse", "category": "Tech", "city": "Cairo", "customer": "Sara", "revenue": 600},
+    {"order_id": 8, "order_date": "2025-03-11", "product_name": "Laptop", "category": "Tech", "city": "Alexandria", "customer": "Mona", "revenue": 12500},
+    {"order_id": 9, "order_date": "2025-03-18", "product_name": "Desk", "category": "Furniture", "city": "Giza", "customer": "Omar", "revenue": 4500},
+    {"order_id": 10, "order_date": "2025-04-02", "product_name": "Chair", "category": "Furniture", "city": "Cairo", "customer": "Sara", "revenue": 2200},
+    {"order_id": 11, "order_date": "2025-04-09", "product_name": "Mouse", "category": "Tech", "city": "Cairo", "customer": "Aya", "revenue": 700},
+    {"order_id": 12, "order_date": "2025-04-25", "product_name": "Desk", "category": "Furniture", "city": "Alexandria", "customer": "Mona", "revenue": 5000},
+]
+
+# نفس الداتا كملف CSV جوه المعمل عشان تمارين قراءة الملفات
+with open("sales_data.csv", "w", encoding="utf-8") as _f:
+    _f.write("order_id,order_date,product_name,category,city,customer,revenue\\n")
+    for _o in sales:
+        _f.write(",".join(str(_o[k]) for k in ["order_id", "order_date", "product_name", "category", "city", "customer", "revenue"]) + "\\n")
+`;
+
+function showLoading(msg){out.innerHTML='';const p=document.createElement('p');p.className='small';p.textContent=msg;out.appendChild(p);}
+
+async function ensurePy(){
+  if(!pyodide){
+    showLoading('بنجهز بيئة Python جوه المتصفح (أول مرة بتاخد ثواني حسب سرعة النت)...');
+    pyodide=await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'});
+  }
+  if(!ready){
+    ns=pyodide.toPy({});
+    pyodide.runPython(BOOTSTRAP,{globals:ns});
+    ready=true;
+  }
+}
+
+function renderResult(text,img){
+  out.innerHTML='';
+  if(text && text.trim()){
+    const pre=document.createElement('pre');
+    pre.textContent=text;
+    out.appendChild(pre);
+  }
+  if(img){
+    const im=document.createElement('img');
+    im.src='data:image/png;base64,'+img;
+    im.alt='الرسمة الناتجة من الكود';
+    out.appendChild(im);
+  }
+  if((!text||!text.trim())&&!img){
+    out.textContent='تم التنفيذ من غير مخرجات. استخدم print عشان تشوف النتايج.';
+  }
+}
+
+runBtn.onclick=async()=>{
+  runBtn.disabled=true;
+  try{
+    await ensurePy();
+    const code=input.value;
+    showLoading('بنجهز المكتبات المطلوبة...');
+    await pyodide.loadPackagesFromImports(code);
+    showLoading('جاري التنفيذ...');
+    const wrapped=[
+      'try:',
+      '    import matplotlib.pyplot as _pltp',
+      '    _pltp.show = lambda *a, **k: None',
+      '    _pltp.close = lambda *a, **k: None',
+      'except Exception:',
+      '    pass',
+      'import sys as _sys, io as _io',
+      '_buf=_io.StringIO()',
+      '_sys.stdout=_buf',
+      '_sys.stderr=_buf',
+      'try:',
+      '    exec('+JSON.stringify(code).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')+', globals())',
+      'except Exception:',
+      '    import traceback as _tb',
+      '    _tb.print_exc()',
+      'finally:',
+      '    _sys.stdout=_sys.__stdout__',
+      '    _sys.stderr=_sys.__stderr__',
+      '_text=_buf.getvalue()',
+      '_img=None',
+      'try:',
+      '    import matplotlib.pyplot as _plt',
+      '    if _plt.get_fignums():',
+      '        _b=_io.BytesIO()',
+      '        _plt.savefig(_b, format="png", bbox_inches="tight")',
+      '        import base64 as _b64',
+      '        _img=_b64.b64encode(_b.getvalue()).decode("ascii")',
+      '        import matplotlib._pylab_helpers as _ph',
+      '        _ph.Gcf.figs.clear()',
+      'except Exception:',
+      '    _img=None',
+      '(_text, _img)'
+    ].join('\n');
+    const res=await pyodide.runPythonAsync(wrapped,{globals:ns});
+    const pair=res&&res.toJs?res.toJs():res;
+    if(res&&res.destroy)res.destroy();
+    renderResult(pair?pair[0]:'', pair?pair[1]:null);
+  }catch(e){
+    out.textContent='راجع الكود: '+e.message;
+  }finally{
+    runBtn.disabled=false;
+  }
+};
+
+resetBtn.onclick=async()=>{
+  try{
+    await ensurePy();
+    ns=pyodide.toPy({});
+    pyodide.runPython(BOOTSTRAP,{globals:ns});
+    renderResult('اتصفّر المعمل. المتغيرات رجعت للصفر وداتا sales جاهزة من الأول.',null);
+  }catch(e){out.textContent='حصل خطأ في التصفير: '+e.message;}
+};
+})();
+
+</script>
+</body>
+</html>
