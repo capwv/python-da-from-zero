@@ -296,9 +296,9 @@ footer{position:relative;border-top:1px solid rgba(255,255,255,.08);padding-top:
       <p>الموقع ده هيمشي معاك من الصفر خالص لحد ما تعمل مشروع تحليل بيانات كامل ترفعه على GitHub. كل درس فيه شرح بالعامية المصرية، أمثلة كود، كويز بإجابة فورية، وتمارين بالحل. وفي معمل Python حقيقي جوه المتصفح تجرب فيه بنفسك. تقدمك بيتحفظ لوحده في المتصفح، فممكن تقفل وترجع تكمل من مكانك.</p>
       <div class="stats"><span><b>14</b> درس متدرج</span><span><b>42</b> سؤال تفاعلي</span><span><b>Python</b> معمل حقيقي</span></div><button id="start-btn" class="cta">ابدأ رحلتك ←</button><p class="hero-hint">من أول print لحد مشروع تحليل مبيعات كامل</p><p class="small">التقدم محفوظ على نفس المتصفح والجهاز فقط. مسح بيانات المتصفح بيمسحه.</p>
     </div>
-    <div id="lesson"></div><section class="lesson" id="lab" hidden><h2>معمل Python العملي</h2><p>Python 3 حقيقي شغال داخل متصفحك (Pyodide / WebAssembly). أول تشغيل بياخد ثواني لتحميل البيئة، وبعدها سريع. البيئة بتحتفظ بالمتغيرات بين التشغيلات، وزرار "صفّر المعمل" بيرجعك للبداية.</p><p>جدول المبيعات التدريبي متعرف جاهز باسم <code>sales</code> (قايمة قواميس، 12 طلب). مكتبات pandas وNumPy وmatplotlib بتتحمل لوحدها أول ما تعمل import، والرسم البياني بيظهر تحت المخرجات.</p><label for="py-input">الكود بتاعك</label><textarea id="py-input" spellcheck="false" rows="10" dir="ltr">for order in sales[:3]:
+    <div id="lesson"></div><section class="lesson" id="lab" hidden><h2>معمل Python العملي</h2><p>Python 3 حقيقي شغال داخل متصفحك (Pyodide / WebAssembly). أول تشغيل بياخد ثواني لتحميل البيئة، وبعدها سريع. البيئة بتحتفظ بالمتغيرات بين التشغيلات، وزرار "صفّر المعمل" بيرجعك للبداية.</p><p>جدول المبيعات التدريبي متعرف جاهز باسم <code>sales</code> (قايمة قواميس، 12 طلب). مكتبات pandas و NumPy و matplotlib بتتحمل لوحدها أول ما تعمل import، والرسم البياني بيظهر تحت المخرجات.</p><label for="py-input">الكود بتاعك</label><textarea id="py-input" spellcheck="false" rows="10" dir="ltr">for order in sales[:3]:
     print(order["product_name"], order["revenue"])</textarea><button class="cta" id="run-py">شغّل الكود ▶</button><button class="solution-toggle" id="reset-py">🔄 صفّر المعمل</button><div id="py-output" aria-live="polite"></div><p class="small">المعمل بيشتغل على جهازك مباشرة، فمكتوبش حاجة بتتبعت لأي سيرفر. اكتب plt.show() في آخر كود الرسم عشان تطلع الرسمة.</p></section>
-  <footer class="small" style="text-align:center;margin:30px 0">من أسرة Infinity University Activity<br><a href="https://docs.python.org/3/tutorial/">Python Tutorial</a> · <a href="https://pandas.pydata.org/docs/user_guide/10min.html">pandas في 10 دقائق</a> · <a href="https://numpy.org/doc/stable/user/absolute_beginners.html">NumPy للمبتدئين</a><p>المعمل يستخدم Pyodide (Python عبر WebAssembly). مكتبات pandas وNumPy وmatplotlib مفتوحة المصدر.</p>
+  <footer class="small" style="text-align:center;margin:30px 0">من أسرة Infinity University Activity<br><a href="https://docs.python.org/3/tutorial/">Python Tutorial</a> · <a href="https://pandas.pydata.org/docs/user_guide/10min.html">pandas في 10 دقائق</a> · <a href="https://numpy.org/doc/stable/user/absolute_beginners.html">NumPy للمبتدئين</a><p>المعمل يستخدم Pyodide (Python عبر WebAssembly). مكتبات pandas و NumPy و matplotlib مفتوحة المصدر.</p>
     <div class="contact-footer" aria-label="بيانات التواصل">
       <div class="contact-name">Ahmed Wael Othman</div>
       <nav class="contact-links" aria-label="روابط التواصل">
@@ -353,7 +353,7 @@ print(12000 + 5000)` },
       { text: 'تصميم الصور واللوجوهات' },
       { text: 'قراءة البيانات وتنضيفها وتحليلها واستخراج نتايج', mono: false },
       { text: 'تشغيل قواعد بيانات على السيرفر' }
-    ], answer: 1, explain: 'دي نقطة قوة Python: مكتبات زي pandas وNumPy معمولة مخصوص لقراءة الجداول وتنضيفها وحساب المؤشرات منها.' },
+    ], answer: 1, explain: 'دي نقطة قوة Python: مكتبات زي pandas و NumPy معمولة مخصوص لقراءة الجداول وتنضيفها وحساب المؤشرات منها.' },
     { q: 'إيه ناتج الكود ده؟', code: `print(2000 + 500)`, options: [
       { text: '2000 + 500', mono: true },
       { text: '2500', mono: true },
@@ -508,7 +508,7 @@ print(round(revenue, 2))   # 12345.68 : رقمين بعد العلامة` },
     { task: 'عندك اسم عميل متكتب وحش: `"  mOhamed "`. نضفه (شيل المسافات وخلي أول حرف كابيتال) واطبعه', code: `name = "  mOhamed "
 print(name.strip().title())   # Mohamed`, why: 'title بتحول أول حرف من كل كلمة لكابيتال والباقي صغير، فبتصلح MOhamed لـ Mohamed.' },
     { task: 'احسب متوسط إيراد 3 طلبات: 12000 و 4500 و 700، واطبعه مقرب لرقمين عشريين', code: `avg = (12000 + 4500 + 700) / 3
-print(round(avg, 2))   # 5733.33`, why: 'القسمة بتطلع float، وround مع رقم 2 بتقرب لرقمين بعد العلامة.' },
+print(round(avg, 2))   # 5733.33`, why: 'القسمة بتطلع float، و round مع رقم 2 بتقرب لرقمين بعد العلامة.' },
     { task: 'اطبع هل رقم الطلب 13 زوجي ولا فردي باستخدام باقي القسمة', code: `order_id = 13
 print(order_id % 2 == 0)   # False يعني فردي`, why: 'لو الباقي من القسمة على 2 يساوي صفر يبقى الرقم زوجي والنتيجة True.' }
   ]
@@ -573,7 +573,7 @@ print(13000 in revenues)           # True : هل القيمة موجودة؟` },
       { text: 'revenues.sum()', mono: true },
       { text: 'sum(revenues)', mono: true },
       { text: 'add(revenues)', mono: true }
-    ], answer: 1, explain: 'sum دالة جاهزة بتاخد القايمة كاملة. القوائم العادية مفيهاش method اسمها sum (دي موجودة في NumPy وpandas بعدين).' }
+    ], answer: 1, explain: 'sum دالة جاهزة بتاخد القايمة كاملة. القوائم العادية مفيهاش method اسمها sum (دي موجودة في NumPy و pandas بعدين).' }
   ],
   exercises: [
     { task: 'عندك القايمة `[12000, 2000, 500, 13000, 4000]`. اطبع أول عنصر، وآخر عنصر، وعدد العناصر', code: `revenues = [12000, 2000, 500, 13000, 4000]
@@ -1270,7 +1270,7 @@ print(merged[["product_name", "revenue", "cost", "profit"]].head())` },
   ],
   quiz: [
     { q: 'إيه ناتج `df.groupby("category")["revenue"].sum()` على داتا المبيعات؟', options: [
-      { text: 'جدول فيه مجموع الإيراد لكل فئة (Tech وFurniture)' },
+      { text: 'جدول فيه مجموع الإيراد لكل فئة (Tech و Furniture)' },
       { text: 'مجموع كل الإيرادات في رقم واحد' },
       { text: 'عدد الصفوف في كل فئة' }
     ], answer: 0, explain: 'groupby بتقسم حسب الفئة وبعدين sum بتحسب جوه كل مجموعة. النتيجة: Tech=39300 و Furniture=19700. عشان العدد نستخدم count أو size.' },
@@ -1430,7 +1430,7 @@ CURRICULUM.push(
   title: 'الدرس 14: مشروع تحليل مبيعات كامل من الأول للآخر',
   subtitle: 'ركب كل اللي اتعلمته في تحليل حقيقي ترفعه GitHub',
   blocks: [
-    { type: 'p', text: 'المشروع: تحليل مبيعات متجر تجريبي في 4 شهور. الداتا مصنوعة للتعلم ومش معاملات شركة حقيقية. الداتا موجودة في المعمل باسم `sales`، ونفسها موجودة في ملف sales_data.csv للتنزيل من المستودع عشان تشتغل عليها في Colab أو على جهازك. كل صف طلب واحد فيه منتج واحد، وorder_id فريد في الداتا دي.' },
+    { type: 'p', text: 'المشروع: تحليل مبيعات متجر تجريبي في 4 شهور. الداتا مصنوعة للتعلم ومش معاملات شركة حقيقية. الداتا موجودة في المعمل باسم `sales`، ونفسها موجودة في ملف sales_data.csv للتنزيل من المستودع عشان تشتغل عليها في Colab أو على جهازك. كل صف طلب واحد فيه منتج واحد، و order_id فريد في الداتا دي.' },
     { type: 'h', text: '1. افهم الداتا وحدد مستوى الصف' },
     { type: 'code', code: `import pandas as pd
 
@@ -1492,7 +1492,7 @@ plt.ylabel("Revenue")
 plt.show()` },
     { type: 'p', text: 'رسمة واحدة كفيلة تخلي أي حد يشوف مشكلة أبريل فوراً. حط الرسمات المهمة في التقرير مع جملة تفسير تحت كل واحدة.' },
     { type: 'h', text: '8. حول التدريب لمشروعك أنت على GitHub' },
-    { type: 'p', text: 'افتح repo جديد من زر New في GitHub، سميه مثلاً sales-python-analysis، وارفع فيه: ملف الداتا sales_data.csv، وملف الكود analysis.py (أو نوتبوك Colab)، وREADME.md فيه القالب ده:' },
+    { type: 'p', text: 'افتح repo جديد من زر New في GitHub، سميه مثلاً sales-python-analysis، وارفع فيه: ملف الداتا sales_data.csv، وملف الكود analysis.py (أو نوتبوك Colab)، و README.md فيه القالب ده:' },
     { type: 'code', code: `# Sales Python Analysis
 ## Goal
 Analyze a synthetic 12-order dataset with pandas.
