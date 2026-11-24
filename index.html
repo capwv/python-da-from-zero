@@ -506,7 +506,7 @@ print(round(revenue, 2))   # 12345.68 : رقمين بعد العلامة` },
   ],
   exercises: [
     { task: 'عندك اسم عميل متكتب وحش: `"  mOhamed "`. نضفه (شيل المسافات وخلي أول حرف كابيتال) واطبعه', code: `name = "  mOhamed "
-print(name.strip().title())   # Mohamed`, why: 'title بتحول أول حرف من كل كلمة لكابيتال والباقي صغير، فبتصلح MOhamed لـ Mohamed.' },
+print(name.strip().title())   # Mohamed`, why: 'title بتحول أول حرف من كل كلمة لكابيتال والباقي صغير، فبتصلح mOhamed لـ Mohamed.' },
     { task: 'احسب متوسط إيراد 3 طلبات: 12000 و 4500 و 700، واطبعه مقرب لرقمين عشريين', code: `avg = (12000 + 4500 + 700) / 3
 print(round(avg, 2))   # 5733.33`, why: 'القسمة بتطلع float، و round مع رقم 2 بتقرب لرقمين بعد العلامة.' },
     { task: 'اطبع هل رقم الطلب 13 زوجي ولا فردي باستخدام باقي القسمة', code: `order_id = 13
@@ -1114,7 +1114,7 @@ print(revenues.max())    # 13000`, why: 'لاحظ استخدام list comprehens
 
 revenues = np.array([o["revenue"] for o in sales])
 avg = revenues.mean()
-print((revenues > avg).sum())   # 3`, why: 'أول حساب المتوسط (حوالي 4917)، وبعدين قناع + sum بيعد اللي فوقه: اللابتوبات التلاتة بس.' },
+print((revenues > avg).sum())   # 4`, why: 'أول حساب المتوسط (حوالي 4917)، وبعدين قناع + sum بيعد اللي فوقه: اللابتوبات التلاتة وطلب Desk بـ 5000.' },
     { task: 'احسب إجمالي الإيراد بعد ضريبة 14% لكل الطلبات، في سطرين بس', code: `import numpy as np
 
 revenues = np.array([o["revenue"] for o in sales])
@@ -1312,7 +1312,7 @@ costs = pd.DataFrame([
 merged = df.merge(costs, on="product_name", how="left")
 print(len(df), len(merged))   # 12 12 : اتأكدنا إن الدمج مضربش الصفوف
 merged["profit"] = merged["revenue"] - merged["cost"]
-print(merged.groupby("city")["profit"].sum())`, why: 'فحص عدد الصفوف قبل الحساب. المفروض يطلع: Alexandria=21400، Cairo=13550، Giza=5350، والإجمالي 40300.' }
+print(merged.groupby("city")["profit"].sum())`, why: 'فحص عدد الصفوف قبل الحساب. المفروض يطلع: Alexandria=9500، Cairo=6050، Giza=3100، والإجمالي 18650.' }
   ]
 }
 );
@@ -1555,7 +1555,7 @@ print("أكبر عميل:", by_customer.index[0], "بإجمالي", by_customer.
 
 </script>
 <script>
-/* SQL من الصفر : rendering engine + progress tracking */
+/* Python من الصفر : rendering engine + progress tracking */
 (function () {
   'use strict';
 
