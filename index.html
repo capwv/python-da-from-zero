@@ -1228,9 +1228,10 @@ print(by_city)
     { type: 'code', code: `# أكتر من إحصائية في نفس الوقت بـ agg
 summary = df.groupby("category")["revenue"].agg(["sum", "mean", "count"])
 print(summary)
-#            sum      mean  count
-# Furniture  19700  3940.0      5
-# Tech       39300  7860.0      5
+#             sum         mean  count
+# category
+# Furniture  19700  3283.333333      6
+# Tech       39300  6550.000000      6
 
 # التجميع بعمودين
 print(df.groupby(["city", "category"])["revenue"].sum())` },
